@@ -1,0 +1,60 @@
+<html>
+    <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script>
+                function enviar(){
+
+                    var data = "data=" + encodeURIComponent($("#profile").val());
+
+                    var jqxhr = $.post( "/user/saveProfile", data, function(resp) {
+                        $("#response").val(JSON.stringify(resp));
+                    })
+                    .fail(function(err) {
+                        $("#response").val("error: " + JSON.stringify(err));
+                    });
+
+                    return false;
+                }
+            </script>
+    </head>
+<body>
+    <form action="user/login" method="post" onsubmit="return enviar()">
+        <textarea id="profile" rows="25" cols="80">
+{
+    "profile": {
+        "picture": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAA...." //este campo é opcional. Quando forem fazer o upload, é só colocar nele o base64 da imagem
+        "type": "professional",
+        "name": "Ivan Valadares",
+        "email": "ivanvaladares@hotmail.com",
+        "password": "123", 
+        "tel": "647 608 3027",
+        "services" : [ #### COPIAR O(S) ID(S) DEPOIS DO LOGIN ### ],
+        "rate_hour" : [
+            {"service": "painting", "rate_hour": 100}, 
+            {"service": "cleaning", "rate_hour": 80}
+        ],
+        "location" : {
+            "type" : "Point",
+            "coordinates" : [ 
+                33.2926487, 
+                44.4159651
+            ]
+        }
+    }
+}
+        </textarea><br />
+        <input type="submit" value="ok" />
+        <br>
+        <br>
+        <br>
+        response:<br>
+
+        <textarea id="response" rows="10" cols="80"></textarea>
+
+        </form>
+
+        <br>
+        
+    
+</body>
+</html>

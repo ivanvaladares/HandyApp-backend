@@ -1,0 +1,41 @@
+<html>
+    <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script>
+                function enviar(){
+
+                    var data = "data=" + $("#login").val();
+
+                    var jqxhr = $.post( "/user/login", data, function(resp) {
+                        $("#response").val(JSON.stringify(resp));
+                    })
+                    .fail(function(err) {
+                        $("#response").val("error: " + JSON.stringify(err));
+                    });
+
+                    return false;
+                }
+            </script>
+    </head>
+<body>
+    <form action="user/login" method="post" onsubmit="return enviar()">
+        <textarea id="login" rows="5" cols="80">
+{
+    "email": "ivanvaladares@hotmail.com",
+    "password": "123"
+}
+        </textarea>
+        <br />
+        <input type="submit" value="ok" />
+        <br>
+        <br>
+        <br>
+        response:<br>
+
+        <textarea id="response" rows="10" cols="80"></textarea>
+
+        </form>
+
+    
+</body>
+</html>
