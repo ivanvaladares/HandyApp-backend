@@ -1,5 +1,6 @@
 const nodeCrypto = require('crypto');
 const fs = require('fs');
+const jimp = require("jimp");
 
 module.exports = {
 
@@ -33,15 +34,27 @@ module.exports = {
             base64Data = base64Data.replace(/^data:image\/\w+;base64,/, '');
 
             this.createFilename(picurePath, imageType).then(filename => {
-                fs.writeFile(filename, base64Data, {encoding: 'base64'}, err => {
+
+                jimp.read(Buffer.from(base64Data, 'base64'), (err, image) => {
                     if (err) {
-                        reject(err);
+                        return reject(err);
                     }
-                    resolve(filename.substring(filename.lastIndexOf("/") + 1));
+                    
+                    image
+                        .cover(400, 400, jimp.HORIZONTAL_ALIGN_CENTER | jimp.VERTICAL_ALIGN_MIDDLE)
+                        .write(filename, (err) => {
+                            if (err) {
+                                return reject(err);
+                            }
+
+                            resolve(filename.substring(filename.lastIndexOf("/") + 1));
+                        });
                 });
+
             });
 
         });
+        
     }
     
 };
