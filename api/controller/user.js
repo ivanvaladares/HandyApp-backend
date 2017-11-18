@@ -158,8 +158,6 @@ exports.saveProfile = (req, res) => {
 
     if (token === undefined){ //new user
         
-        console.log(helpers.uuidv4());
-
         User.get({ email: profile.email }).then(retrievedUser => {
             
             if (retrievedUser !== null && retrievedUser.length > 0) {

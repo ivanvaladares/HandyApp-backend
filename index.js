@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV === 'production') {
+    require('newrelic');
+}    
+
 const express = require('express');
 const app = express();
 
@@ -9,8 +13,12 @@ app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
 //--- Initializing the connection to the database ---\\
+const mongo_uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/handyapp"; //'mongodb://handyapp:!Q2w#E4r@ds259255.mlab.com:59255/heroku_mf9zfbnb'
+
 mongoose.Promise = global.Promise; // ==> Using this because the default promisse of mongoose is depracated and gives annoying warnings
-mongoose.connect("mongodb://127.0.0.1:27017/handyapp", { useMongoClient: true });
+mongoose.Promise = global.Promise; // ==> Using this because the default promisse of mongoose is depracated and gives annoying warnings
+mongoose.connect(mongo_uri, { useMongoClient: true });
+
 
 //--- Initializing the routes ---\\
 const initRoutes = require('./api/routes/init-routes');
