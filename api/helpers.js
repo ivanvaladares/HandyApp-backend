@@ -26,7 +26,7 @@ module.exports = {
 
     savePicture: function (picurePath, base64Data) {
         return new Promise((resolve, reject) => {
-            if (base64Data === undefined){
+            if (base64Data === undefined && base64Data !== ""){
                 return resolve("");
             }
 

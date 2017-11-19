@@ -211,6 +211,10 @@ exports.saveProfile = (req, res) => {
                 helpers.savePicture(picurePath, profile.picture).then(filename => {
                     if (filename !== ""){
                         user.picture = filename;
+                    }else{
+                        if (profile.picture === ""){
+                            user.picture = "";
+                        }
                     }
                     return user;
                 })
@@ -267,8 +271,12 @@ const getProfileFromJson = jsonObject => {
         
         if (isBase64Valid) {
             profile.picture = imgData;
+        }else{
+            if (jsonObject.picture === ""){
+                profile.picture = ""; //se veio vazio, vamos remover a foto do perfil
+            }
         }
-    }    
+    }
 
     if (jsonObject.type === "professional") {
         for (let i = 0; i < professionalFields.length; i++) {
