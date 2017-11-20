@@ -9,4 +9,6 @@ router.post('/login', UserController.login);
 
 router.post('/saveProfile', UserController.saveProfile);
 
+router.post('/searchProfessionals', UserController.searchProfessionals);
+
 module.exports = router;

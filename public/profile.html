@@ -7,10 +7,10 @@
                     var data = "data=" + encodeURIComponent($("#profile").val());
 
                     var jqxhr = $.post( "/user/saveProfile", data, function(resp) {
-                        $("#response").val(JSON.stringify(resp));
+                        $("#response").val(JSON.stringify(resp, null, 4));
                     })
                     .fail(function(err) {
-                        $("#response").val("error: " + JSON.stringify(err));
+                        $("#response").val(JSON.stringify(err, null, 4));
                     });
 
                     return false;
@@ -28,16 +28,12 @@
         "email": "ivanvaladares@hotmail.com",
         "password": "123", 
         "tel": "647 608 3027",
-        "services" : [ #### COPIAR O(S) ID(S) DEPOIS DO LOGIN ### ],
-        "rate_hour" : [
-            {"service": "painting", "rate_hour": 100}, 
-            {"service": "cleaning", "rate_hour": 80}
-        ],
+        "services" : [{ "service": #### COPIAR O(S) ID(S) DEPOIS DO LOGIN ### , "rate_hour": 100 }],
         "location" : {
             "type" : "Point",
             "coordinates" : [ 
-                33.2926487, 
-                44.4159651
+                43.7785100, 
+                -79.346100
             ]
         }
     }

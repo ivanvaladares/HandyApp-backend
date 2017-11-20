@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var serviceSchema = mongoose.Schema({
     name: String,
-    img: String
+    picture: String
 });          
 
 serviceSchema.statics.get = where => {

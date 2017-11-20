@@ -98,17 +98,16 @@ router.get('/', (req, res) => {
         "email": "ivanvaladares@hotmail.com",
         "password": crypto.encrypt("123"),
 		"tel": "647 608 3027",
-		"services": [service1, service2],
-		"rate_hour": [
-			{"service": "painting", "rate_hour": 100}, 
-			{"service": "cleaning", "rate_hour": 80}
+		"services": [
+			{"service": service1, "rate_hour": 100}, 
+			{"service": service2, "rate_hour": 80}
 		],
 		"total_tasks": 88,
 		"location": {
 			"type": "Point",
 			"coordinates": [ 
-				33.2926487, 
-				44.4159651
+				43.7785159, 
+				-79.346555
 			]
         },
         "reviews": [review1, review2]//,

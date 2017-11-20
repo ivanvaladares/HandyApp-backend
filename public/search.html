@@ -4,9 +4,9 @@
             <script>
                 function enviar(){
 
-                    var data = "data=" + $("#login").val();
+                    var data = "data=" + $("#json").val();
 
-                    var jqxhr = $.post( "/user/login", data, function(resp) {
+                    var jqxhr = $.post( "/user/searchProfessionals", data, function(resp) {
                         $("#response").val(JSON.stringify(resp, null, 4));
                     })
                     .fail(function(err) {
@@ -18,11 +18,12 @@
             </script>
     </head>
 <body>
-    <form action="user/login" method="post" onsubmit="return enviar()">
-        <textarea id="login" rows="5" cols="80">
+    <form action="user/searchProfessionals" method="post" onsubmit="return enviar()">
+        <textarea id="json" rows="5" cols="80">
 {
-    "email": "ivanvaladares@hotmail.com",
-    "password": "123"
+    "token" : "2135135135135131351131as3as1f35a1f35a1sf351a3sf1as",
+    "service": "### pegar o id de services apos o login ###",
+    "location": [43.7785100, -79.346100]
 }
         </textarea>
         <br />

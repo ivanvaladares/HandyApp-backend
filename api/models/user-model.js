@@ -8,10 +8,9 @@ var userSchema = mongoose.Schema({
     password: String,
     tel: String,
     address: [],
-    rate_hour: [],
     total_tasks: Number,
     location: { type: { type: String, enum: "Point", default: "Point" }, coordinates: { type: [Number], default: [0, 0] } },
-    services: [{ type: mongoose.Schema.Types.ObjectId, ref: 'service' }],
+    services: [{service: { type: mongoose.Schema.Types.ObjectId, ref: 'service' }, rate_hour: Number }],
     reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'review' }]//,
     //tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'task' }]
 });
@@ -34,7 +33,7 @@ userSchema.statics.get = where => {
         //     { path: 'tasks', options: { sort: { 'date': -1 } } }
         // )
         .populate(
-            { path: 'services' }
+            { path: 'services.service' }
             //{ path: 'services', match: { name: { $in: ['painting'] }} }  
         );
         //.select({services: {$gt: []}});//.where("services").gt(1);
