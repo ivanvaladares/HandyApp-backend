@@ -44,53 +44,6 @@ router.get('/', (req, res) => {
         stars: 5
     });
 
-
-    let task1 = new Task({
-        date: new Date("2017-01-01"),
-        "tasker": "ivanvaladares@hotmail.com",
-        "client": "jvaladao@hotmail.com",
-        "service": "cleaning",
-        "hour": "12:00",
-        "address": {
-            "street": "2015 sheppard ave e", 
-            "unit": "603",
-            "city": "North york",
-            "state": "Ontario",
-            "country": "Canada",
-            "zip": "m2j 0b3"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [ 
-                33.2926487, 
-                44.4159651
-            ]
-        }
-    });
-
-    let task2 = new Task({
-        date: new Date("2017-01-01"),
-        "tasker": "ivanvaladares@hotmail.com",
-        "client": "gustavo@hotmail.com",
-        "service": "cleaning",
-        "hour": "12:00",
-        "address": {
-            "street": "2015 sheppard ave e", 
-            "unit": "603",
-            "city": "North york",
-            "state": "Ontario",
-            "country": "Canada",
-            "zip": "m2j 0b3"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [ 
-                33.2926487, 
-                44.4159651
-            ]
-        }
-    });    
-
     let defaultUser1 = new User({
         "type": "professional",
         "picture": "3121351.jpg",
@@ -157,6 +110,53 @@ router.get('/', (req, res) => {
             "zip": "yyyyy"
         }]
     });    
+
+    let task1 = new Task({
+        date: new Date("2017-01-01"),
+        "tasker": defaultUser1,
+        "client": defaultUser2,
+        "service": service1,
+        "hour": "12:00",
+        "address": {
+            "street": "2015 sheppard ave e", 
+            "unit": "603",
+            "city": "North york",
+            "state": "Ontario",
+            "country": "Canada",
+            "zip": "m2j 0b3"
+        },
+        "location": {
+            "type": "Point",
+            "coordinates": [ 
+                43.7785500, 
+                -79.346900
+            ]
+        }
+    });
+
+    let task2 = new Task({
+        date: new Date("2017-01-01"),
+        "tasker": defaultUser1,
+        "client": defaultUser3,
+        "service": service2,
+        "hour": "12:00",
+        "address": {
+            "street": "2015 sheppard ave e", 
+            "unit": "603",
+            "city": "North york",
+            "state": "Ontario",
+            "country": "Canada",
+            "zip": "m2j 0b3"
+        },
+        "location": {
+            "type": "Point",
+            "coordinates": [ 
+                43.7785500, 
+                -79.346900
+            ]
+        }
+    });    
+
 
     let arr = [service1, service2, task1, task2, review1, review2, defaultUser1, defaultUser2, defaultUser3];
 

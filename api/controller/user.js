@@ -25,25 +25,25 @@ exports.login = (req, res) => {
     try {
         json = JSON.parse(req.body.data);
     } catch (err) {
-        return res.status(500).send({ "error": "Please, review your json data!" });
+        return res.status(400).send({ "error": "Please, review your json data!" });
     }
 
     let errorJson = { "error": "Invalid username or password" };
 
     if (json.email === undefined || json.password === undefined) {
-        return res.status(500).send(errorJson);
+        return res.status(400).send(errorJson);
     }
 
     User.get({ email: json.email }).then(retrievedUser => {
 
         if (retrievedUser === null || retrievedUser.length <= 0) {
-            return res.status(500).send(errorJson);
+            return res.status(401).send(errorJson);
         }
 
         retrievedUser = retrievedUser[0];
 
         if (!retrievedUser || json.password !== crypto.decrypt(retrievedUser.password)) {
-            return res.status(500).send(errorJson);
+            return res.status(401).send(errorJson);
         }
 
         let tokenData = {
@@ -51,19 +51,16 @@ exports.login = (req, res) => {
             email: retrievedUser.email
         };//we can have much more information inside this token
 
-        //remove password and id from response
-        delete retrievedUser._doc._id;
-        delete retrievedUser._doc.password;
         let taskQuery = {};
 
         if (retrievedUser.type === "professional") {
-            taskQuery.tasker = retrievedUser.email;
+            taskQuery.tasker = mongoose.Types.ObjectId(retrievedUser._doc._id.toString());
 
             //remove non professional stuff
             delete retrievedUser._doc.address;
 
         } else {
-            taskQuery.client = retrievedUser.email;
+            taskQuery.client = mongoose.Types.ObjectId(retrievedUser._doc._id.toString());
 
             //remove profession stuff from this client response
             delete retrievedUser._doc.reviews;
@@ -74,6 +71,10 @@ exports.login = (req, res) => {
             delete retrievedUser._doc.total_tasks;
         }
 
+        //remove password and id from response
+        delete retrievedUser._doc._id;
+        delete retrievedUser._doc.password;
+        
         if (retrievedUser.picture !== undefined){   
             retrievedUser.picture = publicPicurePath + retrievedUser.picture;
         }
@@ -149,13 +150,13 @@ exports.saveProfile = (req, res) => {
             token = Jwt.verify(data.token, crypto.privateKey);
         }
     } catch (err) {
-        return res.status(500).send({ "error": "Please, review your json data!" });
+        return res.status(401).send({ "error": "Please, review your json data!" });
     }
 
     let profile = getProfileFromJson(data.profile);
 
     if (profile === false) {
-        return res.status(500).send({ "error": "Please, fill all required fields!" });
+        return res.status(401).send({ "error": "Please, fill all required fields!" });
     }
 
     let user;
@@ -165,7 +166,7 @@ exports.saveProfile = (req, res) => {
         User.get({ email: profile.email }).then(retrievedUser => {
 
             if (retrievedUser !== null && retrievedUser.length > 0) {
-                return res.status(500).send({ "error": "This email is already in use." });
+                return res.status(403).send({ "error": "This email is already in use." });
             }
 
             user = new User(profile);
@@ -194,7 +195,7 @@ exports.saveProfile = (req, res) => {
         User.get({ _id: token.id }).then(retrievedUser => {
 
             if (retrievedUser === null || retrievedUser.length <= 0) {
-                return res.status(500).send({ "error": "Please, sign in again." });
+                return res.status(401).send({ "error": "Please, sign in again." });
             }
 
             user = retrievedUser[0];
@@ -203,7 +204,7 @@ exports.saveProfile = (req, res) => {
 
                 if (userEmail === null || userEmail.length > 0) {
                     if (userEmail[0]._id.toString() !== token.id) {
-                        return res.status(500).send({ "error": "This email is already in use." });
+                        return res.status(403).send({ "error": "This email is already in use." });
                     }
                 }
 
@@ -259,11 +260,11 @@ exports.searchProfessionals = (req, res) => {
         user_lon = data.location[1];
 
     } catch (err) {
-        return res.status(500).send({ "error": "Please, review your json data!" });
+        return res.status(400).send({ "error": "Please, review your json data!" });
     }
 
     if (data.service === undefined) {
-        return res.status(500).send({ "error": "Please, review your json data!" });
+        return res.status(400).send({ "error": "Please, review your json data!" });
     }
 
     let query = {
@@ -314,7 +315,6 @@ exports.searchProfessionals = (req, res) => {
                     }
                 }
 
-                delete professional._doc._id;
                 delete professional._doc.__v;
                 delete professional._doc.password;
                 delete professional._doc.type;

@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
 
 var taskSchema = mongoose.Schema({
-    tasker: String,
-    client: String,
-    service: String,
+    tasker: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+    client: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+    service: { type: mongoose.Schema.Types.ObjectId, ref: 'service' },
     date: Date,
     hour: String,
     address: [],
@@ -12,7 +12,11 @@ var taskSchema = mongoose.Schema({
 
 taskSchema.statics.get = where => {
     return new Promise((resolve, reject) => {
-        var query = Task.find(where).select();
+        var query = Task.find(where).populate(
+            { path: 'tasker', select: 'picture name email tel' }
+        ).populate(
+            { path: 'client', select: 'picture name email tel' }
+        );
 
         query.exec((err, results) => {
             if (err) return reject(err);
