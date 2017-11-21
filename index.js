@@ -1,6 +1,6 @@
 if (process.env.NODE_ENV === 'production') {
     require('newrelic');
-}    
+}
 
 const express = require('express');
 const app = express();
@@ -17,7 +17,9 @@ const mongo_uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/handyapp
 
 mongoose.Promise = global.Promise; // ==> Using this because the default promisse of mongoose is depracated and gives annoying warnings
 mongoose.Promise = global.Promise; // ==> Using this because the default promisse of mongoose is depracated and gives annoying warnings
-mongoose.connect(mongo_uri, { useMongoClient: true });
+mongoose.connect(mongo_uri, { useMongoClient: true }, err => {
+    if(err){ throw err; }
+});
 
 
 //--- Initializing the routes ---\\
@@ -37,7 +39,17 @@ app.get('*', (req, res) => {
 
 const port = process.env.PORT || '3000';
 
-app.listen(port, err => {
+let server = app.listen(port, err => {
     if(err){ throw err; }
     console.log('test listening on port 3000!');
+    app.emit('testEvent');
 });
+
+
+if (process.env.NODE_ENV === 'test'){
+    app.on('finishTest', () => {
+        server.close();
+    });
+
+    module.exports = app;
+}

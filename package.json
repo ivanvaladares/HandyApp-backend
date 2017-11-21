@@ -7,7 +7,8 @@
     "node": "6.11.1"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "mocha -R list --timeout 10000 --exit"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +21,8 @@
     "newrelic": "^2.4.0"
   },
   "devDependencies": {
-    "eslint": "^4.11.0"
+    "eslint": "^4.11.0",
+    "mocha": "^4.0.1",
+    "supertest": "^3.0.0"
   }
 }

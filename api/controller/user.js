@@ -57,7 +57,7 @@ exports.login = (req, res) => {
             taskQuery.tasker = mongoose.Types.ObjectId(retrievedUser._doc._id.toString());
 
             //remove non professional stuff
-            delete retrievedUser._doc.address;
+            //delete retrievedUser._doc.address;
 
         } else {
             taskQuery.client = mongoose.Types.ObjectId(retrievedUser._doc._id.toString());
@@ -150,13 +150,13 @@ exports.saveProfile = (req, res) => {
             token = Jwt.verify(data.token, crypto.privateKey);
         }
     } catch (err) {
-        return res.status(401).send({ "error": "Please, review your json data!" });
+        return res.status(400).send({ "error": "Please, review your json data!" });
     }
 
     let profile = getProfileFromJson(data.profile);
 
     if (profile === false) {
-        return res.status(401).send({ "error": "Please, fill all required fields!" });
+        return res.status(400).send({ "error": "Please, fill all required fields!" });
     }
 
     let user;

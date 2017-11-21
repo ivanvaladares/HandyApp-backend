@@ -8,24 +8,59 @@ var Task = require('../models/task-model');
 var Review = require('../models/review-model');
 var Service = require('../models/service-model');
 
-
 var mongoose = require('mongoose');
 
 router.get('/', (req, res) => {
 
-    mongoose.connection.db.dropCollection('users');
-    mongoose.connection.db.dropCollection('reviews');
-    mongoose.connection.db.dropCollection('tasks');
-    mongoose.connection.db.dropCollection('services');
+    const arrPromisesCleanDatabase = ['users', 'reviews', 'tasks', 'services'];
+    const pClean = arrPromisesCleanDatabase.map(collection => {
+        return new Promise((resolve) => {
+            mongoose.connection.db.dropCollection(collection, () => {
+                resolve();
+            });
+        });
+    });
     
     let service1 = new Service({
-        "name": "painting", 
-        "picture": "/images/sevices/00001.jpg"
+        "name": "Home cleaning", 
+        "picture": "/images/sevices/1.jpg",
+        "order": 1
     });
 
     let service2 = new Service({
-        "name": "cleaning", 
-        "picture": "/images/sevices/00002.jpg"
+        "name": "Office cleaning", 
+        "picture": "/images/sevices/2.jpg",
+        "order": 2
+    });
+
+    let service3 = new Service({
+        "name": "Furniture assembly", 
+        "picture": "/images/sevices/3.jpg",
+        "order": 3
+    });
+
+    let service4 = new Service({
+        "name": "Knobs and locks", 
+        "picture": "/images/sevices/4.jpg",
+        "order": 4
+    });
+
+    let service5 = new Service({
+        "name": "Electrical", 
+        "picture": "/images/sevices/5.jpg",
+        "order": 5
+    });
+
+    let service6 = new Service({
+        "name": "Plumbing", 
+        "picture": "/images/sevices/6.jpg",
+        "order": 6
+    });
+
+    let service7 = new Service({
+        "name": "Painting", 
+        "picture": "/images/sevices/7.jpg",
+        "order": 7
     });
 
     let review1 = new Review({
@@ -158,9 +193,9 @@ router.get('/', (req, res) => {
     });    
 
 
-    let arr = [service1, service2, task1, task2, review1, review2, defaultUser1, defaultUser2, defaultUser3];
+    let arr = [defaultUser1, defaultUser2, defaultUser3, service1, service2, service3, service4, service5, service6, service7, task1, task2, review1, review2];
 
-    const p = arr.map(o => {
+    const pPopulate = arr.map(o => {
         return new Promise((resolve, reject) => {
             o.save((error, result) => {
             if (error) {
@@ -171,10 +206,14 @@ router.get('/', (req, res) => {
         });
     });
     
-    Promise.all(p).then((results) => {
-        res.send(JSON.stringify(results));
-    }, (error) => {
-        res.send(JSON.stringify(error));
+    Promise.all(pClean).then(() => { 
+        Promise.all(pPopulate).then((results) => {
+        
+                res.status(200).send(JSON.stringify(results));
+            
+        }, (error) => {
+            res.status(500).send(JSON.stringify(error));
+        });
     });
 
 });
