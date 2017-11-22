@@ -7,6 +7,8 @@ var taskSchema = mongoose.Schema({
     date: Date,
     hour: String,
     address: [],
+    accepted: Boolean,
+    completed: Boolean,
     location: { 'type': {type: String, enum: "Point", default: "Point"}, coordinates: { type: [Number], default: [0, 0]} }
 });          
 
@@ -16,6 +18,8 @@ taskSchema.statics.get = where => {
             { path: 'tasker', select: 'picture name email tel' }
         ).populate(
             { path: 'client', select: 'picture name email tel' }
+        ).populate(
+            { path: 'service' }
         );
 
         query.exec((err, results) => {

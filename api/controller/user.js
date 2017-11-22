@@ -1,5 +1,3 @@
-var mongoose = require('mongoose');
-
 const Jwt = require("jsonwebtoken");
 
 const crypto = require("../crypto.js");
@@ -48,19 +46,20 @@ exports.login = (req, res) => {
 
         let tokenData = {
             id: retrievedUser._id,
-            email: retrievedUser.email
-        };//we can have much more information inside this token
+            email: retrievedUser.email,
+            type: retrievedUser.type
+        };//we can have more information inside this token
 
         let taskQuery = {};
 
         if (retrievedUser.type === "professional") {
-            taskQuery.tasker = mongoose.Types.ObjectId(retrievedUser._doc._id.toString());
+            taskQuery.tasker = retrievedUser._doc._id.toString();
 
             //remove non professional stuff
             //delete retrievedUser._doc.address;
 
         } else {
-            taskQuery.client = mongoose.Types.ObjectId(retrievedUser._doc._id.toString());
+            taskQuery.client = retrievedUser._doc._id.toString();
 
             //remove profession stuff from this client response
             delete retrievedUser._doc.reviews;
@@ -72,7 +71,7 @@ exports.login = (req, res) => {
         }
 
         //remove password and id from response
-        delete retrievedUser._doc._id;
+        //delete retrievedUser._doc._id;
         delete retrievedUser._doc.password;
         
         if (retrievedUser.picture !== undefined){   
@@ -138,8 +137,7 @@ exports.login = (req, res) => {
 
 exports.saveProfile = (req, res) => {
 
-    let token;
-    let data;
+    let data, token;
 
     try {
         data = JSON.parse(req.body.data);
@@ -246,8 +244,7 @@ exports.saveProfile = (req, res) => {
 exports.searchProfessionals = (req, res) => {
 
     let data;            
-    let user_lat;
-    let user_lon;
+    let user_lat, user_lon;
     
     try {
         data = JSON.parse(req.body.data);
@@ -268,7 +265,7 @@ exports.searchProfessionals = (req, res) => {
     }
 
     let query = {
-        "services.service": mongoose.Types.ObjectId(data.service),
+        "services.service": data.service,
         type: "professional",
         location: {
             $nearSphere: {
@@ -337,6 +334,7 @@ exports.searchProfessionals = (req, res) => {
 //funcoes privadas 
 
 const getProfileFromJson = jsonObject => {
+
     let profile = {};
 
     let basicFields = ["name", "email", "password", "tel", "type"];

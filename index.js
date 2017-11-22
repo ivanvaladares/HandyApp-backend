@@ -25,11 +25,13 @@ mongoose.connect(mongo_uri, { useMongoClient: true }, err => {
 //--- Initializing the routes ---\\
 const initRoutes = require('./api/routes/init-routes');
 const userRoutes = require('./api/routes/user-routes');
+const taskRoutes = require('./api/routes/task-routes');
 
 app.use('/init', initRoutes); 
 app.use('/user', userRoutes); 
+app.use('/task', taskRoutes); 
 
-        
+
 app.use(express.static('public'));
 
 //not found, go to routes test page

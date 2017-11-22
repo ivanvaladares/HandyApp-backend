@@ -1,0 +1,41 @@
+<html>
+    <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script>
+                function enviar(){
+
+                    var data = "data=" + $("#json").val();
+
+                    var jqxhr = $.post( "/task/getTasks", data, function(resp) {
+                        $("#response").val(JSON.stringify(resp, null, 4));
+                    })
+                    .fail(function(err) {
+                        $("#response").val(JSON.stringify(err, null, 4));
+                    });
+
+                    return false;
+                }
+            </script>
+    </head>
+<body>
+    <form action="task/getTasks" method="post" onsubmit="return enviar()">
+        <textarea id="json" rows="5" cols="80">
+{
+    "token" : "2135135135135131351131as3as1f35a1f35a1sf351a3sf1as",
+    "type": "### professional ou client ###"
+}
+        </textarea>
+        <br />
+        <input type="submit" value="ok" />
+        <br>
+        <br>
+        <br>
+        response:<br>
+
+        <textarea id="response" rows="10" cols="80"></textarea>
+
+        </form>
+
+    
+</body>
+</html>

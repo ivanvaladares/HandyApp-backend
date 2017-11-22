@@ -1,0 +1,61 @@
+<html>
+    <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script>
+                function enviar(){
+
+                    var data = "data=" + encodeURIComponent($("#task").val());
+
+                    var jqxhr = $.post( "/task/saveTask", data, function(resp) {
+                        $("#response").val(JSON.stringify(resp, null, 4));
+                    })
+                    .fail(function(err) {
+                        $("#response").val(JSON.stringify(err, null, 4));
+                    });
+
+                    return false;
+                }
+            </script>
+    </head>
+<body>
+    <form action="task/saveTask" method="post" onsubmit="return enviar()">
+    <textarea id="task" rows="25" cols="80">
+{
+    "token" : "2135135135135131351131as3as1f35a1f35a1sf351a3sf1as", //tem que mandar o token que recebeu após o login
+    "_id": "5a15f5937a4b4931a0e28e3e", //remova para criar e adicione para alterar uma task existente
+    "tasker": "### _id do profissional ###",
+    "service": "### _id do servico ###",
+    "date": "2017/01/01",
+    "hour": "12:00",
+    "address": {
+        "street": "2015 sheppard ave e", 
+        "unit": "603",
+        "city": "North york",
+        "state": "Ontario",
+        "country": "Canada",
+        "zip": "m2j 0b3"
+    },
+    "location" : {
+        "type" : "Point",
+        "coordinates" : [ 
+            43.7785100, 
+            -79.346100
+        ]
+    }
+}
+        </textarea><br />
+        <input type="submit" value="ok" />
+        <br>
+        <br>
+        <br>
+        response:<br>
+
+        <textarea id="response" rows="10" cols="80"></textarea>
+
+        </form>
+
+        <br>
+        
+    
+</body>
+</html>

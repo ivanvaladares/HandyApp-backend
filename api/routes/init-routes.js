@@ -152,6 +152,8 @@ router.get('/', (req, res) => {
         "client": defaultUser2,
         "service": service1,
         "hour": "12:00",
+        "completed": false,
+        "accepted": false,
         "address": {
             "street": "2015 sheppard ave e", 
             "unit": "603",
@@ -175,6 +177,8 @@ router.get('/', (req, res) => {
         "client": defaultUser3,
         "service": service2,
         "hour": "12:00",
+        "completed": false,
+        "accepted": false,
         "address": {
             "street": "2015 sheppard ave e", 
             "unit": "603",
