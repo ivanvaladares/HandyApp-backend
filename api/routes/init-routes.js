@@ -23,43 +23,43 @@ router.get('/', (req, res) => {
     
     let service1 = new Service({
         "name": "Home cleaning", 
-        "picture": "/images/sevices/1.jpg",
+        "picture": "/images/services/1.jpg",
         "order": 1
     });
 
     let service2 = new Service({
         "name": "Office cleaning", 
-        "picture": "/images/sevices/2.jpg",
+        "picture": "/images/services/2.jpg",
         "order": 2
     });
 
     let service3 = new Service({
         "name": "Furniture assembly", 
-        "picture": "/images/sevices/3.jpg",
+        "picture": "/images/services/3.jpg",
         "order": 3
     });
 
     let service4 = new Service({
         "name": "Knobs and locks", 
-        "picture": "/images/sevices/4.jpg",
+        "picture": "/images/services/4.jpg",
         "order": 4
     });
 
     let service5 = new Service({
         "name": "Electrical", 
-        "picture": "/images/sevices/5.jpg",
+        "picture": "/images/services/5.jpg",
         "order": 5
     });
 
     let service6 = new Service({
         "name": "Plumbing", 
-        "picture": "/images/sevices/6.jpg",
+        "picture": "/images/services/6.jpg",
         "order": 6
     });
 
     let service7 = new Service({
         "name": "Painting", 
-        "picture": "/images/sevices/7.jpg",
+        "picture": "/images/services/7.jpg",
         "order": 7
     });
 
