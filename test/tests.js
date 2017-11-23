@@ -522,7 +522,7 @@ describe('Testing routes -', () => {
     it('Fail to reject a completed task test', () => {
         
         let data = {
-            "token": clientJsonLogin.token,
+            "token": professionalJsonLogin.token,
             "_id": taskJson.results[0]._id
         };
 
