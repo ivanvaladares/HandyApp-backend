@@ -154,7 +154,7 @@ exports.removeTask = (req, res) => {
     Task.get({ _id: data._id }).then(retrievedTask => {
 
         if (retrievedTask === null || retrievedTask.length <= 0) {
-            return res.status(400).send({ "error": "Please, fill all required fields!" });
+            return res.status(500).send({ "error": "Sorry! This task is not available." });
         }
 
         if (retrievedTask[0]._doc.client._id.toString() !== token.id || 

@@ -445,7 +445,7 @@ describe('Testing routes -', () => {
         
         let data = {
             "token": professionalJsonLogin.token,
-            "_id": taskJson.results[0]._id
+            "_id": taskJson.results[1]._id
         };
 
         return request(app)
