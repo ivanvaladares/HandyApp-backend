@@ -27,11 +27,8 @@ userSchema.statics.get = where => {
         //var query = User.find({ location: { $nearSphere: { $geometry: { type: "Point", coordinates: [33.2926487, 44.4159651] }, $maxDistance: 100000 } } })
         var query = User.find(where)
         .populate(
-            { path: 'reviews', options: { limit: 5, sort: { 'date': -1 } } }
+            { path: 'reviews', populate: { path: 'client', select: 'name picture' }, options: { limit: 5, sort: { 'date': -1 } } }
         )
-        // .populate(
-        //     { path: 'tasks', options: { sort: { 'date': -1 } } }
-        // )
         .populate(
             { path: 'services.service' }
             //{ path: 'services', match: { name: { $in: ['painting'] }} }  

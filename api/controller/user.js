@@ -80,7 +80,8 @@ exports.login = (req, res) => {
 
         if (retrievedUser.reviews !== undefined) {
             retrievedUser.reviews.map(review => {
-                review.picture = publicPicurePath + review.picture;
+                review.picture = publicPicurePath + review.client.picture;
+                review._doc.client = review.client.name;
             });
         }
 

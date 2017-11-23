@@ -1,8 +1,7 @@
 var mongoose = require('mongoose');
 
 var reviewSchema = mongoose.Schema({
-    picture: String,
-    client: String,
+    client: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
     text: String,
     stars: Number,
     date: Date
@@ -10,7 +9,9 @@ var reviewSchema = mongoose.Schema({
 
 reviewSchema.statics.get = where => {
     return new Promise((resolve, reject) => {
-        var query = Review.find(where).select();
+        var query = Review.find(where).populate(
+            { path: 'client', select: 'picture name' }
+        );
 
         query.exec((err, results) => {
             if (err) return reject(err);

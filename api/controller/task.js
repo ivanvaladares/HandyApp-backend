@@ -5,6 +5,7 @@ const crypto = require("../crypto.js");
 const User = require('../models/user-model');
 const Task = require('../models/task-model');
 const Service = require('../models/service-model');
+const Review = require('../models/review-model');
 
 
 exports.getTasks = (req, res) => {
@@ -62,6 +63,7 @@ exports.saveTask = (req, res) => {
             task.client = token.id;
             task.completed = false;
             task.accepted = false;
+            task.rejected = false;
 
             User.get({ _id: task.tasker }).then(tasker => { //ensure it's a professional
                 if (tasker === null || tasker.length <= 0 || tasker[0].type !== "professional") {
@@ -103,7 +105,10 @@ exports.saveTask = (req, res) => {
                 return res.status(400).send({ "error": "Please, fill all required fields!" });
             }
 
-            if (retrievedTask[0]._doc.client._id.toString() !== token.id){
+            if (retrievedTask[0]._doc.client._id.toString() !== token.id || 
+                retrievedTask[0]._doc.accepted || 
+                retrievedTask[0]._doc.completed){
+
                 return res.status(401).send({ "error": "You can't change this task!" });
             }
 
@@ -128,9 +133,232 @@ exports.saveTask = (req, res) => {
 
 };
 
+exports.removeTask = (req, res) => {
+
+    let data, token;
+
+    try {
+        data = JSON.parse(req.body.data);
+        token = Jwt.verify(data.token, crypto.privateKey);
+
+        if (data._id === undefined) {
+            throw new Error("Please, review your json data!");
+        }
+    
+    } catch (err) {
+        return res.status(400).send({ "error": "Please, review your json data!" });
+    }
+    
+    let task;
+
+    Task.get({ _id: data._id }).then(retrievedTask => {
+
+        if (retrievedTask === null || retrievedTask.length <= 0) {
+            return res.status(400).send({ "error": "Please, fill all required fields!" });
+        }
+
+        if (retrievedTask[0]._doc.client._id.toString() !== token.id || 
+            retrievedTask[0]._doc.accepted || 
+            retrievedTask[0]._doc.completed){
+                
+            return res.status(401).send({ "error": "You can't remove this task!" });
+        }
+
+        task = retrievedTask[0];
+
+        task.remove(err => {
+            if (err) {
+                return res.status(500).send(err.message);
+            }
+            res.json({ "message": "Success!" });
+        });
+
+    }).catch(err => {
+        res.status(500).send(err.message);
+    });
+
+};
+
+exports.acceptTask = (req, res) => {
+
+    let data, token;
+
+    try {
+        data = JSON.parse(req.body.data);
+        token = Jwt.verify(data.token, crypto.privateKey);
+
+        if (data._id === undefined) {
+            throw new Error("Please, review your json data!");
+        }
+    
+    } catch (err) {
+        return res.status(400).send({ "error": "Please, review your json data!" });
+    }
+    
+    let task;
+
+    Task.get({ _id: data._id }).then(retrievedTask => {
+
+        if (retrievedTask === null || retrievedTask.length <= 0) {
+            return res.status(500).send({ "error": "Sorry! This task is not available." });
+        }
+
+        if (retrievedTask[0]._doc.tasker._id.toString() !== token.id){
+            return res.status(401).send({ "error": "You can't change this task!" });
+        }
+
+        task = retrievedTask[0];
+
+        task.accepted = true;
+        task.rejected = false;
+
+        task.save(err => {
+            if (err) {
+                return res.status(500).send(err.message);
+            }
+
+            //todo: enviar email de aceitacao
+            
+            res.json({ "message": "Success!" });
+        });
+
+    }).catch(err => {
+        res.status(500).send(err.message);
+    });
+
+};
+
+exports.rejectTask = (req, res) => {
+    
+    let data, token;
+
+    try {
+        data = JSON.parse(req.body.data);
+        token = Jwt.verify(data.token, crypto.privateKey);
+
+        if (data._id === undefined) {
+            throw new Error("Please, review your json data!");
+        }
+    
+    } catch (err) {
+        return res.status(400).send({ "error": "Please, review your json data!" });
+    }
+    
+    let task;
+
+    Task.get({ _id: data._id }).then(retrievedTask => {
+
+        if (retrievedTask === null || retrievedTask.length <= 0) {
+            return res.status(500).send({ "error": "Sorry! This task is not available." });
+        }
+
+        if (retrievedTask[0]._doc.tasker._id.toString() !== token.id ||
+            retrievedTask[0]._doc.completed){
+            return res.status(401).send({ "error": "You can't change this task!" });
+        }
+
+        task = retrievedTask[0];
+
+        task.rejected = true;
+        task.accepted = false;
+        
+        task.save(err => {
+            if (err) {
+                return res.status(500).send(err.message);
+            }
+
+            //todo: enviar email de rejeicao
+
+            res.json({ "message": "Success!" });
+        });
+
+    }).catch(err => {
+        res.status(500).send(err.message);
+    });
+
+};
+    
+exports.completeTask = (req, res) => {
+
+    let data, token;
+
+    try {
+        data = JSON.parse(req.body.data);
+        token = Jwt.verify(data.token, crypto.privateKey);
+
+        if (data._id === undefined) {
+            throw new Error("Please, review your json data!");
+        }
+    
+    } catch (err) {
+        return res.status(400).send({ "error": "Please, review your json data!" });
+    }
+    
+    let task;
+
+    Task.get({ _id: data._id }).then(retrievedTask => {
+
+        if (retrievedTask === null || retrievedTask.length <= 0) {
+            return res.status(500).send({ "error": "Sorry! This task is not available." });
+        }
+
+        if (retrievedTask[0]._doc.client._id.toString() !== token.id ||
+            !retrievedTask[0]._doc.accepted){
+            return res.status(401).send({ "error": "You can't change this task!" });
+        }
+
+        task = retrievedTask[0];
+        let arrToSave = [];
+        let review;
+        
+        task.completed = true;
+        arrToSave.push(task);
+        
+        if (data.review !== undefined &&
+            data.review.text !== undefined &&
+            data.review.stars !== undefined){
+
+                review = new Review({
+                    client: token.id,
+                    text: data.review.text,
+                    stars: data.review.stars,
+                    date: new Date()
+                });
+
+                arrToSave.push(review);
+        }
+
+        const pToSave = arrToSave.map(obj => {
+            return new Promise((resolve, reject) => {
+                obj.save((error, result) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(result);
+                });
+            });
+        });
+        
+        Promise.all(pToSave).then(() => {
+
+            User.findOneAndUpdate({ _id: task.tasker._id}, { $inc: { 'total_tasks': 1 }, $push: { 'reviews': review }}).exec().then(() => {
+                res.json({ "message": "Success!" });
+            }).catch(err => {
+                res.status(500).send(JSON.stringify(err));
+            });
+            
+        }).catch(err => {
+            res.status(500).send(JSON.stringify(err));
+        });
+
+    }).catch(err => {
+        res.status(500).send(err.message);
+    });
+
+};
+
 
 //funcoes privadas 
-
 const getTaskFromJson = jsonObject => {
     let task = {};
 

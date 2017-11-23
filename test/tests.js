@@ -1,7 +1,6 @@
 
 const request = require('supertest');
 const mocha = require('mocha');
-const assert = require("assert");
 const describe = mocha.describe;
 const before = mocha.before;
 const after = mocha.after;
@@ -13,7 +12,7 @@ process.env.MONGODB_URI = 'mongodb://localhost/handyapp-testing';
 let app;
 let clientJsonLogin, professionalJsonLogin;
 
-describe('Test routes -', () => {
+describe('Testing routes -', () => {
 
     before(done => {
             
@@ -34,12 +33,15 @@ describe('Test routes -', () => {
     });
     
     it('clean and load the test database', () => {
-        return request(app).get('/init').expect(200)
+        return request(app).get('/init')
+        .expect(200)
         .expect(res => {
-            assert(
-                res != null
-            );
-          });
+
+            if (res.text === "") {
+                throw new Error('Missing information on json after load the test database');
+            }
+
+        });
     });
 
     it('No root route is expected', () => {
@@ -299,6 +301,40 @@ describe('Test routes -', () => {
             .expect({ "message": "Success!" });
         
     });
+
+
+    it('Create a second task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "service": clientJsonLogin.services[0]._id,
+            "tasker": professionalJsonLogin.profile._id,
+            "date": "2017/01/02",
+            "hour": "12:15",
+            "address": {
+                "street": "yyyyy", 
+                "unit": "603",
+                "city": "North york",
+                "state": "Ontario",
+                "country": "Canada",
+                "zip": "m2j 0b3"
+            },
+            "location": {
+                "type": "Point",
+                "coordinates": [ 
+                    43.7785100, 
+                    -79.346100
+                ]
+            }
+        };
+
+        return request(app)
+            .post('/task/saveTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(200)
+            .expect({ "message": "Success!" });
+        
+    });    
     
     let taskJson;
     it('Get client tasks with tasks test', () => {
@@ -330,7 +366,7 @@ describe('Test routes -', () => {
         
         let data = {
             "token": clientJsonLogin.token,
-            "_id": taskJson._id,
+            "_id": taskJson.results[0]._id,
             "service": clientJsonLogin.services[0]._id,
             "tasker": professionalJsonLogin.profile._id,
             "date": "2017/02/02",
@@ -358,6 +394,143 @@ describe('Test routes -', () => {
             .expect(200)
             .expect({ "message": "Success!" });
         
+    });
+
+
+    it('Fail to accepts a task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "_id": taskJson.results[0]._id
+        };
+
+        return request(app)
+            .post('/task/acceptTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });     
+   
+    it('Failt to reject a task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "_id": taskJson.results[0]._id
+        };
+
+        return request(app)
+            .post('/task/rejectTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });   
+
+    it('Accepts a task test', () => {
+        
+        let data = {
+            "token": professionalJsonLogin.token,
+            "_id": taskJson.results[0]._id
+        };
+
+        return request(app)
+            .post('/task/acceptTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(200)
+            .expect({ "message": "Success!" });
+        
+    }); 
+
+    
+    it('Reject a task test', () => {
+        
+        let data = {
+            "token": professionalJsonLogin.token,
+            "_id": taskJson.results[0]._id
+        };
+
+        return request(app)
+            .post('/task/rejectTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(200)
+            .expect({ "message": "Success!" });
+        
+    }); 
+  
+    
+    it('Complete a task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "_id": taskJson.results[0]._id,
+            "review": {"text": "novo review", "stars": 4.5}
+        };
+
+        return request(app)
+            .post('/task/completeTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(200)
+            .expect({ "message": "Success!" });
+        
+    });        
+    
+
+    it('Fail to complete an unaccepted task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "_id": taskJson.results[1]._id,
+            "review": {"text": "novo review", "stars": 4.5}
+        };
+
+        return request(app)
+            .post('/task/completeTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });        
+        
+
+    it('Remove a task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "_id": taskJson.results[1]._id
+        };
+
+        return request(app)
+            .post('/task/removeTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(200)
+            .expect({ "message": "Success!" });
+        
     });    
+    
+    it('Fail to remove a completed task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "_id": taskJson.results[0]._id
+        };
+
+        return request(app)
+            .post('/task/removeTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });    
+    
+    it('Fail to reject a completed task test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "_id": taskJson.results[0]._id
+        };
+
+        return request(app)
+            .post('/task/rejectTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });
 
 });

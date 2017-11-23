@@ -63,18 +63,59 @@ router.get('/', (req, res) => {
         "order": 7
     });
 
+    let defaultUser2 = new User({
+        "type": "client",
+        "picture": "3121351.jpg",
+		"name": "Joana Valadao",
+        "email": "jvaladao@hotmail.com",
+        "password": crypto.encrypt("123"),
+		"tel": "647 608 3027",
+        "address": [{
+            "street": "2015 sheppard ave e", 
+            "unit": "603",
+            "city": "North york",
+            "state": "Ontario",
+            "country": "Canada",
+            "zip": "m2j 0b3"
+            },
+            {
+            "street": "xxxxx", 
+            "unit": "603",
+            "city": "North york",
+            "state": "Ontario",
+            "country": "Canada",
+            "zip": "xxxxxx"
+        }]
+    });    
+
+    let defaultUser3 = new User({
+        "type": "client",
+        "picture": "3121351.jpg",
+		"name": "Gustavo Calland",
+        "email": "gustavo@hotmail.com",
+        "password": crypto.encrypt("123"),
+		"tel": "647 608 3027",
+        "address": [{
+            "street": "yyyy", 
+            "unit": "603",
+            "city": "North york",
+            "state": "Ontario",
+            "country": "Canada",
+            "zip": "yyyyy"
+        }]
+    });    
+    
+
     let review1 = new Review({
         date: new Date("2017-01-01"),
-        "client": "Joana Valadao", 
-        "picture": "3121351.jpg", 
+        "client": defaultUser3, 
         "text": "BLAL LLAKDLKA", 
         stars: 4.5
     });
 
     let review2 = new Review({
         date: new Date("2017-01-02"),
-        "client": "XXXX", 
-        "picture": "3121351.jpg", 
+        "client": defaultUser2, 
         "text": "XXXXX", 
         stars: 5
     });
@@ -103,49 +144,6 @@ router.get('/', (req, res) => {
     });    
 
 
-    let defaultUser2 = new User({
-        "type": "client",
-        "picture": "3121351.jpg",
-		"name": "Joana Valadao",
-        "email": "jvaladao@hotmail.com",
-        "password": crypto.encrypt("123"),
-		"tel": "647 608 3027",
-        "address": [{
-            "street": "2015 sheppard ave e", 
-            "unit": "603",
-            "city": "North york",
-            "state": "Ontario",
-            "country": "Canada",
-            "zip": "m2j 0b3"
-            },
-            {
-            "street": "xxxxx", 
-            "unit": "603",
-            "city": "North york",
-            "state": "Ontario",
-            "country": "Canada",
-            "zip": "xxxxxx"
-        }]
-    });    
-
-
-    let defaultUser3 = new User({
-        "type": "client",
-        "picture": "3121351.jpg",
-		"name": "Gustavo Calland",
-        "email": "gustavo@hotmail.com",
-        "password": crypto.encrypt("123"),
-		"tel": "647 608 3027",
-        "address": [{
-            "street": "yyyy", 
-            "unit": "603",
-            "city": "North york",
-            "state": "Ontario",
-            "country": "Canada",
-            "zip": "yyyyy"
-        }]
-    });    
-
     let task1 = new Task({
         date: new Date("2017-01-01"),
         "tasker": defaultUser1,
@@ -154,6 +152,7 @@ router.get('/', (req, res) => {
         "hour": "12:00",
         "completed": false,
         "accepted": false,
+        "rejected": false,
         "address": {
             "street": "2015 sheppard ave e", 
             "unit": "603",
@@ -179,6 +178,7 @@ router.get('/', (req, res) => {
         "hour": "12:00",
         "completed": false,
         "accepted": false,
+        "rejected": false,
         "address": {
             "street": "2015 sheppard ave e", 
             "unit": "603",
