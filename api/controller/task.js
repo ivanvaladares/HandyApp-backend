@@ -341,7 +341,13 @@ exports.completeTask = (req, res) => {
         
         Promise.all(pToSave).then(() => {
 
-            User.findOneAndUpdate({ _id: task.tasker._id}, { $inc: { 'total_tasks': 1 }, $push: { 'reviews': review }}).exec().then(() => {
+            let dataToMongo = { $inc: { 'total_tasks': 1 }};
+
+            if (review !== undefined) {
+                dataToMongo.$push = { 'reviews': review };
+            }
+
+            User.findOneAndUpdate({ _id: task.tasker._id}, dataToMongo).exec().then(() => {
                 res.json({ "message": "Success!" });
             }).catch(err => {
                 res.status(500).send(JSON.stringify(err));
