@@ -65,6 +65,20 @@ module.exports = {
             (1 - c((lon2 - lon1) * p)) / 2;
 
         return 12742 * Math.asin(Math.sqrt(a));
-      }
-    
+    },
+
+    createPromiseArraToSave: function (arrToSave) {
+
+        return arrToSave.map(obj => {
+            return new Promise((resolve, reject) => {
+                obj.save((error, result) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(result);
+                });
+            });
+        });
+    }
+
 };

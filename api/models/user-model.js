@@ -23,17 +23,13 @@ userSchema.statics.get = where => {
 
     return new Promise((resolve, reject) => {
 
-        //var query = User.find(where).select();
-        //var query = User.find({ location: { $nearSphere: { $geometry: { type: "Point", coordinates: [33.2926487, 44.4159651] }, $maxDistance: 100000 } } })
         var query = User.find(where)
         .populate(
             { path: 'reviews', populate: { path: 'client', select: 'name picture' }, options: { limit: 5, sort: { 'date': -1 } } }
         )
         .populate(
             { path: 'services.service' }
-            //{ path: 'services', match: { name: { $in: ['painting'] }} }  
         );
-        //.select({services: {$gt: []}});//.where("services").gt(1);
     
         query.exec((err, results) => {
             if (err) return reject(err);

@@ -21,7 +21,7 @@ taskSchema.statics.get = where => {
             { path: 'client', select: 'picture name email tel' }
         ).populate(
             { path: 'service' }
-        );
+        ).sort({ 'date': -1 });
 
         query.exec((err, results) => {
             if (err) return reject(err);

@@ -1,11 +1,10 @@
 const Jwt = require("jsonwebtoken");
-
 const crypto = require("../crypto.js");
 
 const User = require('../models/user-model');
 const Task = require('../models/task-model');
 const Service = require('../models/service-model');
-const Review = require('../models/review-model');
+const Review = require('../controller/review');
 
 
 exports.getTasks = (req, res) => {
@@ -308,53 +307,31 @@ exports.completeTask = (req, res) => {
         }
 
         task = retrievedTask[0];
-        let arrToSave = [];
-        let review;
-        
         task.completed = true;
-        arrToSave.push(task);
-        
-        if (data.review !== undefined &&
-            data.review.text !== undefined &&
-            data.review.stars !== undefined){
 
-                review = new Review({
-                    client: token.id,
-                    text: data.review.text,
-                    stars: data.review.stars,
-                    date: new Date()
-                });
-
-                arrToSave.push(review);
-        }
-
-        const pToSave = arrToSave.map(obj => {
-            return new Promise((resolve, reject) => {
-                obj.save((error, result) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    resolve(result);
-                });
-            });
-        });
-        
-        Promise.all(pToSave).then(() => {
-
-            let dataToMongo = { $inc: { 'total_tasks': 1 }};
-
-            if (review !== undefined) {
-                dataToMongo.$push = { 'reviews': review };
+        task.save(err => {
+            if (err) {
+                return res.status(500).send(JSON.stringify(err));
             }
 
-            User.findOneAndUpdate({ _id: task.tasker._id}, dataToMongo).exec().then(() => {
+            if (data.review !== undefined &&
+                data.review.text !== undefined &&
+                data.review.stars !== undefined){
+    
+                    Review.save({
+                        tasker: task.tasker._id.toString(),
+                        text: data.review.text,
+                        stars: data.review.stars
+                    }, token).then(() => {
+                        res.json({ "message": "Success!" });
+                    }).catch(err => {
+                        res.status(err.httpCode).send(err.message);
+                    });
+
+            }else{
                 res.json({ "message": "Success!" });
-            }).catch(err => {
-                res.status(500).send(JSON.stringify(err));
-            });
-            
-        }).catch(err => {
-            res.status(500).send(JSON.stringify(err));
+            }
+
         });
 
     }).catch(err => {
@@ -365,6 +342,7 @@ exports.completeTask = (req, res) => {
 
 
 //funcoes privadas 
+
 const getTaskFromJson = jsonObject => {
     let task = {};
 

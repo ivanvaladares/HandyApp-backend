@@ -11,7 +11,7 @@ reviewSchema.statics.get = where => {
     return new Promise((resolve, reject) => {
         var query = Review.find(where).populate(
             { path: 'client', select: 'picture name' }
-        );
+        ).sort({ 'date': -1 });
 
         query.exec((err, results) => {
             if (err) return reject(err);
