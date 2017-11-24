@@ -1,0 +1,45 @@
+<html>
+    <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script>
+                function enviar(){
+
+                    var data = "data=" + encodeURIComponent($("#task").val());
+
+                    var jqxhr = $.post( "/review/saveReview", data, function(resp) {
+                        $("#response").val(JSON.stringify(resp, null, 4));
+                    })
+                    .fail(function(err) {
+                        $("#response").val(JSON.stringify(err, null, 4));
+                    });
+
+                    return false;
+                }
+            </script>
+    </head>
+<body>
+    <form action="review/saveReview" method="post" onsubmit="return enviar()">
+    <textarea id="task" rows="25" cols="80">
+{
+    "token" : "2135135135135131351131as3as1f35a1f35a1sf351a3sf1as", //tem que mandar o token que recebeu após o login
+    "_id": "5a15f5937a4b4931a0e28e3e", //remova para criar e adicione para alterar uma review existente
+    "tasker": "### _id do profissional ###",
+    "text": "texto da review que pode ser vazio",
+    "stars": 5
+}
+        </textarea><br />
+        <input type="submit" value="ok" />
+        <br>
+        <br>
+        <br>
+        response:<br>
+
+        <textarea id="response" rows="10" cols="80"></textarea>
+
+        </form>
+
+        <br>
+        
+    
+</body>
+</html>

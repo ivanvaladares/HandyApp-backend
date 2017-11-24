@@ -24,15 +24,27 @@ userSchema.statics.get = where => {
     return new Promise((resolve, reject) => {
 
         var query = User.find(where)
-        .populate(
-            { path: 'reviews', populate: { path: 'client', select: 'name picture' }, options: { limit: 5, sort: { 'date': -1 } } }
-        )
-        .populate(
-            { path: 'services.service' }
-        );
+                        .populate(
+                            { path: 'reviews', populate: { path: 'client', select: 'name picture' }, options: { limit: 5, sort: { 'date': -1 } } }
+                        )
+                        .populate(
+                            { path: 'services.service' }
+                        );
     
         query.exec((err, results) => {
             if (err) return reject(err);
+
+            results.map(profile => {
+                if (profile.reviews !== undefined) {
+                    profile.reviews.map(review => {
+                        review._doc.picture = review._doc.client.picture;
+                        review._doc.client = review.client.name;
+                    });
+                }
+
+                delete profile._doc.password;
+            });
+
             resolve(results);
         });
 

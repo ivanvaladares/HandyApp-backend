@@ -9,7 +9,14 @@ exports.getReviews = (data) => {
     return new Promise((resolve, reject) => {
 
         User.get({ _id: data.tasker }).then(retrievedUser => {
-            resolve({results: retrievedUser[0].reviews});
+
+            let reviews = [];
+
+            if (retrievedUser !== null && retrievedUser.length === 1) {
+                reviews = retrievedUser[0].reviews;
+            }
+
+            resolve({results: reviews});
     
         }).catch(() => {
             reject({ code: 500, "message": "Please try again!" });
@@ -20,7 +27,7 @@ exports.getReviews = (data) => {
 
 };
 
-exports.saveReview = (data, token) => {
+exports.saveReview = (data, token, taskCompleted) => {
     
     return new Promise((resolve, reject) => {
 
@@ -44,8 +51,9 @@ exports.saveReview = (data, token) => {
                 }else{
 
                     let tasker = retrievedTaskers[0];
-
-                    tasker.total_tasks++; 
+                    if (taskCompleted){
+                        tasker.total_tasks++; 
+                    }
                     tasker.reviews.push(review);
 
                     helpers.saveAll([tasker, review]).then(() => {

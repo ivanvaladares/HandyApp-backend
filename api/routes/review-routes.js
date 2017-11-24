@@ -18,7 +18,7 @@ const getReviews = (req, res) => {
 
 const saveReview = (req, res) => {
 
-    ReviewController.saveReview(req.data, req.token).then(reviews => {
+    ReviewController.saveReview(req.data, req.token, false).then(reviews => {
         
         res.json(reviews);
 

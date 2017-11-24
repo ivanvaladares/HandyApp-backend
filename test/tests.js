@@ -262,7 +262,6 @@ describe('Testing routes -', () => {
         
     });
 
-
     it('Get client tasks without tasks test', () => {
 
         let data = {
@@ -287,7 +286,6 @@ describe('Testing routes -', () => {
         });
         
     });
-
 
     it('Create a task test', () => {
         
@@ -415,7 +413,6 @@ describe('Testing routes -', () => {
         
     });
 
-
     it('Fail to accepts a task test', () => {
         
         let data = {
@@ -458,7 +455,6 @@ describe('Testing routes -', () => {
             .expect({ "message": "Success!" });
         
     }); 
-
     
     it('Reject a task test', () => {
         
@@ -475,7 +471,6 @@ describe('Testing routes -', () => {
         
     }); 
   
-    
     it('Complete a task test', () => {
         
         let data = {
@@ -492,6 +487,29 @@ describe('Testing routes -', () => {
         
     });        
     
+    it('Check if professional was rated test', () => {
+        
+        return request(app)
+        .post('/user/login')
+        .send('data={"email": "professional@hotmail.com", "password": "123"}')
+        .expect(200)
+        .expect(res => {
+            let profile = JSON.parse(res.text);
+
+            if (profile.token === null ||
+                profile.profile === null ||
+                profile.profile.services === null ||
+                profile.profile.location === null ||
+                profile.services === null ||
+                profile.tasks === null ||
+                profile.profile.total_tasks !== 1 ||
+                profile.profile.reviews.length !== 1) {
+
+                throw new Error('Missing information on json after login');
+            }
+        });
+        
+    }); 
 
     it('Fail to complete an unaccepted task test', () => {
         
@@ -508,7 +526,6 @@ describe('Testing routes -', () => {
         
     });        
         
-
     it('Remove a task test', () => {
         
         let data = {

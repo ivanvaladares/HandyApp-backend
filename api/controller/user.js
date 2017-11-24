@@ -31,17 +31,13 @@ exports.login = (data) => {
             return reject({ code: 401, "message": errorMessage });
         }
 
-        User.get({ email: data.email }).then(retrievedUser => {
+        User.get({ email: data.email, password: crypto.encrypt(data.password) }).then(retrievedUser => {
 
             if (retrievedUser === null || retrievedUser.length <= 0) {
                 return reject({ code: 401, "message": errorMessage });
             }
 
             retrievedUser = retrievedUser[0];
-
-            if (!retrievedUser || data.password !== crypto.decrypt(retrievedUser.password)) {
-                return reject({ code: 401, "message": errorMessage });
-            }
 
             let tokenData = {
                 id: retrievedUser._id,
@@ -55,16 +51,13 @@ exports.login = (data) => {
                 profile: retrievedUser
             };
 
-            //let taskQuery = {};
 
             if (retrievedUser.type === "professional") {
-                //taskQuery.tasker = retrievedUser._doc._id.toString();
 
                 //remove non professional stuff
                 //delete retrievedUser._doc.address;
 
             } else {
-                //taskQuery.client = retrievedUser._doc._id.toString();
 
                 //remove profession stuff from this client response
                 delete retrievedUser._doc.reviews;
@@ -74,13 +67,6 @@ exports.login = (data) => {
                 delete retrievedUser._doc.reviews;
                 delete retrievedUser._doc.total_tasks;
             }
-
-
-            //remove password and id from response
-            //delete retrievedUser._doc._id;
-            delete retrievedUser._doc.password;
-
-            retrievedUser = formatProfile(retrievedUser);
 
             let arrPromises = [];
 
@@ -280,9 +266,6 @@ exports.searchProfessionals = (data) => {
 
                 if (listProfessional){
 
-                    professional = formatProfile(professional);
-
-                    delete professional._doc.password;
                     delete professional._doc.type;
                     delete professional._doc.services;
                     delete professional._doc.address;
@@ -302,18 +285,6 @@ exports.searchProfessionals = (data) => {
 
 
 //funcoes privadas 
-
-const formatProfile = (profile) => {
-
-    if (profile.reviews !== undefined) {
-        profile.reviews.map(review => {
-            review._doc.picture = review.client.picture;
-            review._doc.client = review.client.name;
-        });
-    }    
-    
-    return profile;
-};
 
 const getProfileFromJson = jsonObject => {
 

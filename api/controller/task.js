@@ -244,7 +244,7 @@ exports.completeTask = (data, token) => {
 
                     data.review.tasker = task.tasker._id.toString();
 
-                    ReviewController.saveReview(data.review, token).then(() => {
+                    ReviewController.saveReview(data.review, token, true).then(() => {
                         resolve({ "message": "Success!" });
                 
                     }).catch(err => {
