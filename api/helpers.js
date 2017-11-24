@@ -67,18 +67,25 @@ module.exports = {
         return 12742 * Math.asin(Math.sqrt(a));
     },
 
-    createPromiseArraToSave: function (arrToSave) {
+    saveAll: function (arrToSave) {
+        return new Promise((resolve, reject) => {
 
-        return arrToSave.map(obj => {
-            return new Promise((resolve, reject) => {
-                obj.save((error, result) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    resolve(result);
+            let arr = arrToSave.map(obj => {
+                return new Promise((resolve, reject) => {
+                    obj.save().then((result) => {
+                        resolve(result);
+                    }).catch(err => {
+                        reject(err);
+                    });
                 });
             });
-        });
-    }
 
+            Promise.all(arr).then(() => {
+                resolve();
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    
+    }
 };

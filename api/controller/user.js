@@ -174,15 +174,13 @@ exports.saveProfile = (req, res) => {
                     user.picture = filename;
                 }
                 return user;
-            })
-                .then(user => {
-                    user.save(err => {
-                        if (err) {
-                            return res.status(500).send(err.message);
-                        }
-                        res.json({ "message": "Success!" });
-                    });
+            }).then(user => {
+                user.save().then(() => {
+                    res.json({ "message": "Success!" });
+                }).catch(err => {
+                    res.status(500).send(err.message);
                 });
+            });
 
         }).catch(err => {
             res.status(500).send(err.message);
@@ -220,15 +218,14 @@ exports.saveProfile = (req, res) => {
                         }
                     }
                     return user;
-                })
-                    .then(user => {
-                        user.save(err => {
-                            if (err) {
-                                return res.status(500).send(err.message);
-                            }
-                            res.json({ "message": "Success!" });
-                        });
+                    
+                }).then(user => {
+                    user.save().then(() => {
+                        res.json({ "message": "Success!" });
+                    }).catch(err => {
+                        res.status(500).send(err.message);
                     });
+                });
 
             }).catch(err => {
                 res.status(500).send(err.message);
@@ -305,12 +302,14 @@ exports.searchProfessionals = (req, res) => {
 
             if (listProfessional){
 
-                if (professional._doc.reviews !== undefined){
-                    for (let i = 0; i < professional._doc.reviews.length; i++) {
-                        delete professional._doc.reviews[i]._doc._id;
-                        delete professional._doc.reviews[i]._doc.__v;
-                    }
-                }
+                if (professional._doc.reviews !== undefined) {
+                    professional._doc.reviews.map(review => {
+                        review.picture = publicPicurePath + review.client.picture;
+                        review._doc.client = review.client.name;
+                        delete review._doc._id;
+                        delete review._doc.__v;                        
+                    });
+                }                        
 
                 delete professional._doc.__v;
                 delete professional._doc.password;

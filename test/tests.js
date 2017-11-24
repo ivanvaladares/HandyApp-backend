@@ -134,6 +134,26 @@ describe('Testing routes -', () => {
             .expect({ "message": "Success!" });
         
     });
+
+    it('Check if profile was updated test', () => {
+        return request(app)
+            .post('/user/login')
+            .send('data={"email": "newUpdated@hotmail.com", "password": "123"}')
+            .expect(200)
+            .expect(res => {
+                let login = JSON.parse(res.text);
+
+                if (login.token === null ||
+                    login.profile === null ||
+                    login.services === null ||
+                    login.tasks === null ||
+                    login.profile.name !== "Updated profile") {
+
+                    throw new Error('Missing information on json after login');
+                }
+        });
+
+    });    
     
     it('Update profile to existing email test', () => {
         
@@ -302,7 +322,6 @@ describe('Testing routes -', () => {
         
     });
 
-
     it('Create a second task test', () => {
         
         let data = {
@@ -334,7 +353,7 @@ describe('Testing routes -', () => {
             .expect(200)
             .expect({ "message": "Success!" });
         
-    });    
+    });
     
     let taskJson;
     it('Get client tasks with tasks test', () => {
@@ -353,7 +372,7 @@ describe('Testing routes -', () => {
                 taskJson = JSON.parse(res.text);
 
                 if (taskJson.results === undefined || 
-                    taskJson.results.length <= 0) {
+                    taskJson.results.length !== 2) {
 
                     throw new Error('Error on get tasks for user with tasks');
                 }
@@ -532,5 +551,47 @@ describe('Testing routes -', () => {
             .expect(401);
         
     });
+
+    it('Create a review test', () => {
+        
+        let data = {
+            "token": clientJsonLogin.token,
+            "tasker": professionalJsonLogin.profile._id.toString(),
+            "text": "Outro review", 
+            "stars": 5
+        };
+
+        return request(app)
+            .post('/review/saveReview')
+            .send('data=' + JSON.stringify(data))
+            .expect(200)
+            .expect({ "message": "Success!" });
+        
+    });    
+    
+    it('Get all reviews of a professsional test', () => {
+
+        let data = {
+            "token": clientJsonLogin.token,
+            "tasker": professionalJsonLogin.profile._id.toString()
+        };
+
+        return request(app)
+            .post('/review/getReviews')
+            .send('data=' + JSON.stringify(data))
+            .expect(200)
+            .expect(res => {
+
+                let reviews = JSON.parse(res.text);
+
+                if (reviews.results === undefined || 
+                    reviews.results.length !== 2) {
+
+                    throw new Error('Error on get reviews of a professional');
+                }
+
+        });
+        
+    }); 
 
 });

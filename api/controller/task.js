@@ -1,10 +1,11 @@
+const helpers = require("../helpers.js");
 const Jwt = require("jsonwebtoken");
 const crypto = require("../crypto.js");
 
 const User = require('../models/user-model');
 const Task = require('../models/task-model');
 const Service = require('../models/service-model');
-const Review = require('../controller/review');
+const Review = require('../models/review-model');
 
 
 exports.getTasks = (req, res) => {
@@ -68,19 +69,11 @@ exports.saveTask = (req, res) => {
                 if (tasker === null || tasker.length <= 0 || tasker[0].type !== "professional") {
                     return res.status(400).send({ "error": "Please, fill all required fields!" });
                 }
-                
-                return task;
-
-            }).then(task => {
 
                 Service.get({ _id: task.service }).then(services => { //ensure it's a service
                     if (services === null || services.length <= 0) {
                         return res.status(400).send({ "error": "Please, fill all required fields!" });
                     }
-                    
-                    return task;
-
-                }).then(task => {                
 
                     task.save(err => {
                         if (err) {
@@ -92,8 +85,7 @@ exports.saveTask = (req, res) => {
 
                 }).catch(err => {
                     res.status(500).send(err.message);
-                });
-
+                });                
             });
 
     } else { //update task
@@ -306,33 +298,47 @@ exports.completeTask = (req, res) => {
             return res.status(401).send({ "error": "You can't change this task!" });
         }
 
+        let arrToSave = [];
+        let review;
+
         task = retrievedTask[0];
         task.completed = true;
 
-        task.save(err => {
-            if (err) {
-                return res.status(500).send(JSON.stringify(err));
+        arrToSave.push(task);
+
+        
+        //todo: use review controller to save this review and update the user to centralize this
+        if (data.review !== undefined &&
+            data.review.text !== undefined &&
+            data.review.stars !== undefined){
+
+                review = new Review({
+                    client: token.id,
+                    text: data.review.text,
+                    stars: data.review.stars,
+                    date: new Date()
+                });
+
+            arrToSave.push(review);
+        }
+
+        helpers.saveAll(arrToSave).then(() => {
+
+            let dataToMongo = { $inc: { 'total_tasks': 1 }};
+
+            if (review !== undefined) {
+                dataToMongo.$push = { 'reviews': review };
             }
 
-            if (data.review !== undefined &&
-                data.review.text !== undefined &&
-                data.review.stars !== undefined){
-    
-                    Review.save({
-                        tasker: task.tasker._id.toString(),
-                        text: data.review.text,
-                        stars: data.review.stars
-                    }, token).then(() => {
-                        res.json({ "message": "Success!" });
-                    }).catch(err => {
-                        res.status(err.httpCode).send(err.message);
-                    });
-
-            }else{
+            User.findOneAndUpdate({ _id: task.tasker._id.toString() }, dataToMongo).exec().then(() => {
                 res.json({ "message": "Success!" });
-            }
-
-        });
+            }).catch(err => {
+                res.status(500).send(JSON.stringify(err));
+            });
+            
+        }).catch(err => {
+            res.status(500).send(JSON.stringify(err));
+        });        
 
     }).catch(err => {
         res.status(500).send(err.message);
