@@ -2,6 +2,10 @@ const nodeCrypto = require('crypto');
 const fs = require('fs');
 const jimp = require("jimp");
 
+const Jwt = require("jsonwebtoken");
+const crypto = require('./crypto.js');
+
+
 module.exports = {
 
     uuidv4: function () {
@@ -86,6 +90,44 @@ module.exports = {
                 reject(err);
             });
         });
-    
+    },
+
+    isAuthenticated: function (req, res, next) {
+
+        try {
+            let data = JSON.parse(req.body.data);
+            let token = Jwt.verify(data.token, crypto.privateKey);
+
+            req.data = data;
+            req.token = token;
+        
+        } catch (err) {
+            return res.status(400).send({ "error": "Please, review your json data!" });
+        }        
+
+        return next();
+
+    },
+
+    getPostDataAndToken: function (req, res, next) {
+
+        try {
+            req.data = JSON.parse(req.body.data);
+        
+        } catch (err) {
+            return res.status(400).send({ "error": "Please, review your json data!" });
+        }        
+
+        try {
+            req.token = Jwt.verify(req.body.token, crypto.privateKey);
+
+        } catch (err) {
+            //do not propagate this error
+        }        
+        
+        return next();
+
     }
+    
+
 };

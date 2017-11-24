@@ -1,15 +1,53 @@
 var express = require('express');
-var router  = express.Router();
-
+const helpers = require("../helpers.js");
 var UserController = require('../controller/user');
 
+var router  = express.Router();
+
+
 //todo: remover este metodo
-router.get('/', UserController.get); 
+const get = (req, res) => {
+    UserController.get(null).then(users => {
+        res.send("<pre>" + JSON.stringify(users, null, 4) + "</pre>"); //formatting to easy reading
+    });
+};
 
-router.post('/login', UserController.login);
+const login = (req, res) => {
 
-router.post('/saveProfile', UserController.saveProfile);
+    UserController.login(req.data).then(result => {
+        res.json(result);
 
-router.post('/searchProfessionals', UserController.searchProfessionals);
+    }).catch(err => {
+        return res.status(err.code).send({ "message": err.message });
+    });
+
+};
+
+const saveProfile = (req, res) => {
+
+    UserController.saveProfile(req.data).then(result => {
+        res.json(result);
+
+    }).catch(err => {
+        return res.status(err.code).send({ "message": err.message });
+    });
+
+};
+
+const searchProfessionals = (req, res) => {
+
+    UserController.searchProfessionals(req.data).then(results => {
+        res.json(results);
+
+    }).catch(err => {
+        return res.status(err.code).send({ "message": err.message });
+    });    
+
+};
+
+router.get('/', get); 
+router.post('/login', helpers.getPostDataAndToken, login);
+router.post('/saveProfile', helpers.getPostDataAndToken, saveProfile);
+router.post('/searchProfessionals', helpers.isAuthenticated, searchProfessionals);
 
 module.exports = router;

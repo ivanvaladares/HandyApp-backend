@@ -65,7 +65,7 @@ router.get('/', (req, res) => {
 
     let defaultUser2 = new User({
         "type": "client",
-        "picture": "3121351.jpg",
+        "picture": "/images/users/3.jpg",
 		"name": "Joana Valadao",
         "email": "jvaladao@hotmail.com",
         "password": crypto.encrypt("123"),
@@ -90,7 +90,7 @@ router.get('/', (req, res) => {
 
     let defaultUser3 = new User({
         "type": "client",
-        "picture": "3121351.jpg",
+        "picture": "/images/users/1.jpg",
 		"name": "Gustavo Calland",
         "email": "gustavo@hotmail.com",
         "password": crypto.encrypt("123"),
@@ -122,7 +122,7 @@ router.get('/', (req, res) => {
 
     let defaultUser1 = new User({
         "type": "professional",
-        "picture": "3121351.jpg",
+        "picture": "/images/users/2.jpg",
 		"name": "Ivan Valadares",
         "email": "ivanvaladares@hotmail.com",
         "password": crypto.encrypt("123"),
