@@ -33,15 +33,7 @@ describe('Testing routes -', () => {
     });
     
     it('clean and load the test database', () => {
-        return request(app).get('/init')
-        .expect(200)
-        .expect(res => {
-
-            if (res.text === "") {
-                throw new Error('Missing information on json after load the test database');
-            }
-
-        });
+        return require("./load.js").loadDatabase();
     });
 
     it('No root route is expected', () => {
