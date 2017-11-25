@@ -135,6 +135,36 @@ describe('Testing routes -', () => {
         
     });
 
+    it('Update profile with a false token test', () => {
+        
+        let data = {
+            "token": "123123132132121321",
+            "profile": {
+                "type": "client",
+                "name": "Updated profile",
+                "email": "newUpdated@hotmail.com",
+                "password": "123", 
+                "tel": "647 608 3027",
+                "address": [
+                    {
+                        "street": "street address",
+                        "unit": "603",
+                        "city": "North york",
+                        "state": "Ontario",
+                        "country": "Canada",
+                        "zip": "m2j0b3"
+                    }
+                ]
+            }
+        };
+
+        return request(app)
+            .post('/user/saveProfile')
+            .send('data=' + JSON.stringify(data))
+            .expect(403);
+        
+    });    
+
     it('Check if profile was updated test', () => {
         return request(app)
             .post('/user/login')
@@ -262,6 +292,21 @@ describe('Testing routes -', () => {
         
     });
 
+    it('Search professional with an expired token test', () => {
+
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "service": clientJsonLogin.services[0]._id,
+            "location": [43.7785100, -79.346100]
+        };
+
+        return request(app)
+            .post('/user/searchProfessionals')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });
+
     it('Get client tasks without tasks test', () => {
 
         let data = {
@@ -320,6 +365,38 @@ describe('Testing routes -', () => {
         
     });
 
+    it('Create a task with an expired token test', () => {
+        
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "service": clientJsonLogin.services[0]._id,
+            "tasker": professionalJsonLogin.profile._id,
+            "date": "2017/01/01",
+            "hour": "12:10",
+            "address": {
+                "street": "yyyyy", 
+                "unit": "603",
+                "city": "North york",
+                "state": "Ontario",
+                "country": "Canada",
+                "zip": "m2j 0b3"
+            },
+            "location": {
+                "type": "Point",
+                "coordinates": [ 
+                    43.7785100, 
+                    -79.346100
+                ]
+            }
+        };
+
+        return request(app)
+            .post('/task/saveTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });
+    
     it('Create a second task test', () => {
         
         let data = {
@@ -378,6 +455,20 @@ describe('Testing routes -', () => {
         });
         
     });
+
+    it('Get client tasks with an expired token test', () => {
+
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "type": "client"
+        };
+
+        return request(app)
+            .post('/task/getTasks')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });    
 
     it('Update a task test', () => {
         
@@ -441,6 +532,20 @@ describe('Testing routes -', () => {
         
     });   
 
+    it('Accepts a task with an expired token test', () => {
+        
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "_id": taskJson.results[0]._id
+        };
+
+        return request(app)
+            .post('/task/acceptTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    }); 
+        
     it('Accepts a task test', () => {
         
         let data = {
@@ -453,6 +558,20 @@ describe('Testing routes -', () => {
             .send('data=' + JSON.stringify(data))
             .expect(200)
             .expect({ "message": "Success!" });
+        
+    }); 
+    
+    it('Reject a task with an expired token test', () => {
+        
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "_id": taskJson.results[1]._id
+        };
+
+        return request(app)
+            .post('/task/rejectTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
         
     }); 
     
@@ -470,6 +589,20 @@ describe('Testing routes -', () => {
             .expect({ "message": "Success!" });
         
     }); 
+
+    it('Complete a task without a token test', () => {
+        
+        let data = {
+            "_id": taskJson.results[0]._id,
+            "review": {"text": "novo review", "stars": 4.5}
+        };
+
+        return request(app)
+            .post('/task/completeTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(400);
+        
+    });    
   
     it('Complete a task test', () => {
         
@@ -524,7 +657,21 @@ describe('Testing routes -', () => {
             .send('data=' + JSON.stringify(data))
             .expect(401);
         
-    });        
+    });      
+        
+    it('Remove a task with an expired token test', () => {
+        
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "_id": taskJson.results[1]._id
+        };
+
+        return request(app)
+            .post('/task/removeTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });            
         
     it('Remove a task test', () => {
         
@@ -584,7 +731,23 @@ describe('Testing routes -', () => {
             .expect(200)
             .expect({ "message": "Success!" });
         
-    });    
+    });  
+
+    it('Create a review with an expired token test', () => {
+        
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "tasker": professionalJsonLogin.profile._id.toString(),
+            "text": "Outro review", 
+            "stars": 5
+        };
+
+        return request(app)
+            .post('/review/saveReview')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });     
     
     it('Get all reviews of a professsional test', () => {
 
@@ -608,6 +771,34 @@ describe('Testing routes -', () => {
                 }
 
         });
+        
+    }); 
+        
+    it('Get all reviews of a professsional without a token test', () => {
+
+        let data = {
+            "token": "",
+            "tasker": professionalJsonLogin.profile._id.toString()
+        };
+
+        return request(app)
+            .post('/review/getReviews')
+            .send('data=' + JSON.stringify(data))
+            .expect(400);
+        
+    });
+        
+    it('Get all reviews of a professsional with an expired token test', () => {
+
+        let data = {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMTdiZjY4MjQzYWQ2NDc3YzUzOWJlMiIsImVtYWlsIjoiaXZhbnZhbGFkYXJlc0Bob3RtYWlsLmNvbSIsInR5cGUiOiJwcm9mZXNzaW9uYWwiLCJpYXQiOjE1MTE1NjY1MjksImV4cCI6MTUxMTU2NzEyOX0.rfzl0sVCG3dOzwc1EAlg-F9nHyU90563SHA-YaXxvLk",
+            "tasker": professionalJsonLogin.profile._id.toString()
+        };
+
+        return request(app)
+            .post('/review/getReviews')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
         
     }); 
 
