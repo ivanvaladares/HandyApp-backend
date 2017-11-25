@@ -25,7 +25,8 @@ userSchema.statics.get = where => {
 
         var query = User.find(where)
                         .populate(
-                            { path: 'reviews', populate: { path: 'client', select: 'name picture' }, options: { limit: 5, sort: { 'date': -1 } } }
+                            //{ path: 'reviews', populate: { path: 'client', select: 'name picture' }, options: { limit: 5, sort: { 'date': -1 } } }
+                            { path: 'reviews', populate: { path: 'client', select: 'name picture' }, options: { sort: { 'date': -1 } } }
                         )
                         .populate(
                             { path: 'services.service' }
@@ -35,11 +36,18 @@ userSchema.statics.get = where => {
             if (err) return reject(err);
 
             results.map(profile => {
-                if (profile.reviews !== undefined) {
+                if (profile.reviews.length > 0) {
+
+                    let rating = 0;
+
                     profile.reviews.map(review => {
+                        rating += review._doc.stars;
+
                         review._doc.picture = review._doc.client.picture;
                         review._doc.client = review.client.name;
                     });
+
+                    profile._doc.rating = (rating / profile.reviews.length).toFixed(2);
                 }
 
                 delete profile._doc.password;

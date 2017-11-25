@@ -47,7 +47,7 @@ exports.login = (data) => {
 
             //criar um objeto resposta
             let response = {
-                token: Jwt.sign(tokenData, crypto.privateKey),
+                token: Jwt.sign(tokenData, crypto.privateKey, { expiresIn: (60 * 60) * 24 }),
                 profile: retrievedUser
             };
 

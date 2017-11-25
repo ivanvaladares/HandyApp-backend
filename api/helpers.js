@@ -102,7 +102,11 @@ module.exports = {
             req.token = token;
         
         } catch (err) {
-            return res.status(400).send({ "error": "Please, review your json data!" });
+            if (err.message === "jwt expired") {
+                return res.status(401).send({ "message": "Please, sign in again." });
+            }else{
+                return res.status(400).send({ "message": "Please, review your json data!" });
+            }
         }        
 
         return next();
@@ -113,18 +117,19 @@ module.exports = {
 
         try {
             req.data = JSON.parse(req.body.data);
+
+            if (req.body.token !== undefined){
+                req.token = Jwt.verify(req.body.token, crypto.privateKey);
+            }
         
         } catch (err) {
-            return res.status(400).send({ "error": "Please, review your json data!" });
+            if (err.message === "jwt expired") {
+                return res.status(401).send({ "message": "Please, sign in again." });
+            }else{
+                return res.status(400).send({ "message": "Please, review your json data!" });
+            }
         }        
 
-        try {
-            req.token = Jwt.verify(req.body.token, crypto.privateKey);
-
-        } catch (err) {
-            //do not propagate this error
-        }        
-        
         return next();
 
     }
