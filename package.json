@@ -13,10 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^6.1.4",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "jimp": "^0.2.28",
     "jsonwebtoken": "^8.1.0",
+    "log4js-node-mongodb": "^2.2.1",
     "mongoose": "^4.13.2",
     "newrelic": "^2.4.0"
   },

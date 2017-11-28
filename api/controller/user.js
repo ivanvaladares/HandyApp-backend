@@ -5,24 +5,29 @@ const helpers = require("../helpers.js");
 const User = require('../models/user-model');
 const Service = require('../models/service-model');
 const TaskController = require('../controller/task');
+const log4js = require('log4js');
+
+const logger = log4js.getLogger(process.env.LOGGER_NAME);
 
 const picurePath = "./public/images/users/";
 const publicPicurePath = "/images/users/";
 
 //todo: remover este metodo
 exports.get = () => {
-    
+
     return new Promise((resolve, reject) => {
         User.get(null).then(users => {
-            resolve(users); 
-        }).catch(() => {
+            resolve(users);
+        }).catch(err => {
+            logger.error({ source: 'user.get', err });
+
             reject({ code: 500, "message": "Please try again!" });
         });
     });
 };
 
 exports.login = (data) => {
-    
+
     return new Promise((resolve, reject) => {
 
         let errorMessage = "Invalid username or password";
@@ -34,6 +39,8 @@ exports.login = (data) => {
         User.get({ email: data.email, password: crypto.encrypt(data.password) }).then(retrievedUser => {
 
             if (retrievedUser === null || retrievedUser.length <= 0) {
+                logger.info({ source: 'user.login', message: 'Invalid login attempt', email: data.email });
+
                 return reject({ code: 401, "message": errorMessage });
             }
 
@@ -105,12 +112,16 @@ exports.login = (data) => {
 
                 resolve(response);
 
-            }).catch(() => {
+            }).catch(err => {
+                logger.error({ source: 'user.login', err, email: data.email });
+
                 reject({ code: 500, "message": "Please try again!" });
             });
 
 
-        }).catch(() => {
+        }).catch(err => {
+            logger.error({ source: 'user.login', err, email: data.email });
+
             reject({ code: 500, "message": "Please try again!" });
         });
     });
@@ -118,7 +129,7 @@ exports.login = (data) => {
 };
 
 exports.saveProfile = (data, token) => {
-    
+
     return new Promise((resolve, reject) => {
 
         let profile = getProfileFromJson(data.profile);
@@ -148,11 +159,17 @@ exports.saveProfile = (data, token) => {
                     user.save().then(() => {
                         resolve({ "message": "Success!" });
                     }).catch(err => {
+                        logger.error({ source: 'user.saveProfile', err, data });
+
                         reject({ code: 500, "message": err.message });
                     });
+                }).catch(err => {
+                    logger.error({ source: 'user.saveProfile', err, data });
                 });
 
             }).catch(err => {
+                logger.error({ source: 'user.saveProfile', err, data });
+
                 reject({ code: 500, "message": err.message });
             });
 
@@ -188,20 +205,28 @@ exports.saveProfile = (data, token) => {
                             }
                         }
                         return user;
-                        
+
                     }).then(user => {
                         user.save().then(() => {
                             resolve({ "message": "Success!" });
                         }).catch(err => {
+                            logger.error({ source: 'user.saveProfile', err, data });
+
                             reject({ code: 500, "message": err.message });
                         });
+                    }).catch(err => {
+                        logger.error({ source: 'user.saveProfile', err, data });
                     });
 
                 }).catch(err => {
+                    logger.error({ source: 'user.saveProfile', err, data });
+
                     reject({ code: 500, "message": err.message });
                 });
 
             }).catch(err => {
+                logger.error({ source: 'user.saveProfile', err, data });
+
                 reject({ code: 500, "message": err.message });
             });
         }
@@ -211,11 +236,11 @@ exports.saveProfile = (data, token) => {
 };
 
 exports.searchProfessionals = (data) => {
-    
+
     return new Promise((resolve, reject) => {
-          
+
         let user_lat, user_lon;
-        
+
         try {
 
             user_lat = data.location[0];
@@ -253,7 +278,7 @@ exports.searchProfessionals = (data) => {
 
                 let professional_lat = professional.location.coordinates[0];
                 let professional_lon = professional.location.coordinates[1];
-                       
+
                 professional._doc.distance = helpers.distance(professional_lat, professional_lon, user_lat, user_lon);
 
                 for (let i = 0; i < professional._doc.services.length; i++) {
@@ -264,7 +289,7 @@ exports.searchProfessionals = (data) => {
                     }
                 }
 
-                if (listProfessional){
+                if (listProfessional) {
 
                     delete professional._doc.type;
                     delete professional._doc.services;
@@ -274,9 +299,11 @@ exports.searchProfessionals = (data) => {
                 }
             });
 
-            resolve({results: response});
+            resolve({ results: response });
 
-        }).catch(() => {
+        }).catch(err => {
+            logger.error({ source: 'user.searchProfessionals', err, data });
+
             reject({ code: 500, "message": "Please try again!" });
         });
     });

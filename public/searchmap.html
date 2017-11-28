@@ -41,15 +41,26 @@
             
             var jqxhr = $.get("/user", function (resp) {
                 var usersJson = JSON.parse(resp.replace("<pre>","").replace("</pre>",""));
+                var bound = new google.maps.LatLngBounds();
+                var markersCount = 0;
 
                 usersJson.map(function (user){
 
                     if (user.type === "professional"){
+                        var latLon = { lat: user.location.coordinates[0], lng: user.location.coordinates[1] };
 
-                        addMarker({ lat: user.location.coordinates[0], lng: user.location.coordinates[1] }, user.name);
+                        bound.extend(latLon);
+
+                        addMarker(latLon, user.name);
+
+                        markersCount++;
                     }
 
-                })
+                });
+
+                if (markersCount > 1){
+                    map.fitBounds(bound);
+                }
 
             }).fail(function (err) {
                 alert(err.message)
@@ -68,8 +79,8 @@
         function initMap() {
 
             map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: -34.397, lng: 150.644 },
-                zoom: 6
+                center: { lat: 43.7785159, lng: -79.346555 },
+                zoom: 7
             });
 
             getProfessionals();

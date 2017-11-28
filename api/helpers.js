@@ -5,6 +5,9 @@ const jimp = require("jimp");
 const Jwt = require("jsonwebtoken");
 const crypto = require('./crypto.js');
 
+const sendgridMail = require('@sendgrid/mail');
+
+const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
 module.exports = {
 
@@ -132,7 +135,75 @@ module.exports = {
 
         return next();
 
-    }
+    },
+
+    sendEmail: function (to, subject, message) {
+        return new Promise((resolve, reject) => {
+
+            sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
+            const msg = {
+              to: to,
+              from: process.env.EMAIL_FROM,
+              subject: subject,
+              text: message
+            };
+
+            sendgridMail.send(msg, err => {
+                if(err) { 
+                    return reject(err);
+                }
+                resolve();
+            });
+
+        });
+    },
+
+    sendEmailTaskRequested: function (task) {
+        return new Promise((resolve, reject) => {
+
+            let subject = '[HandyApp] - Someone needs you!';
+            let message = `A ${task.service.name} task, schedule for: ${task.date.toLocaleDateString("en-US", dateOptions)} at ${task.hour} was requested.`;
+            message += '\n\nPlease, go to our app for more details';
+
+            this.sendEmail(task._doc.tasker.email, subject, message).then(() => {
+                resolve();
+            }).catch(err => {
+                reject(err);
+            });
+
+        });
+    },
     
+    sendEmailTaskAccpepted: function (task) {
+        return new Promise((resolve, reject) => {
+
+            let subject = '[HandyApp] - Your task was accepted';
+            let message = `Your ${task.service.name} task, schedule for: ${task.date.toLocaleDateString("en-US", dateOptions)} at ${task.hour} was accepted.`;
+            message += '\n\nThe professional will contact you soon!';
+
+            this.sendEmail(task._doc.client.email, subject, message).then(() => {
+                resolve();
+            }).catch(err => {
+                reject(err);
+            });
+
+        });
+    },
+
+    sendEmailTaskRejected: function (task) {
+        return new Promise((resolve, reject) => {
+
+            let subject = '[HandyApp] - Your task was rejected';
+            let message = `Your ${task.service.name} task, schedule for: ${task.date.toLocaleDateString("en-US", dateOptions)} at ${task.hour} was rejected.`;
+            message += '\n\nPlease, go to our app for more details';
+
+            this.sendEmail(task._doc.client.email, subject, message).then(() => {
+                resolve();
+            }).catch(err => {
+                reject(err);
+            });
+
+        });
+    }
 
 };

@@ -2,6 +2,9 @@ const helpers = require("../helpers.js");
 
 const User = require('../models/user-model');
 const Review = require('../models/review-model');
+const log4js = require('log4js');
+
+const logger = log4js.getLogger(process.env.LOGGER_NAME);
 
 
 exports.getReviews = (data) => {
@@ -18,7 +21,9 @@ exports.getReviews = (data) => {
 
             resolve({results: reviews});
     
-        }).catch(() => {
+        }).catch(err => {
+            logger.error({source: 'review.getReviews', err, data});
+
             reject({ code: 500, "message": "Please try again!" });
 
         });    
@@ -61,11 +66,15 @@ exports.saveReview = (data, token, taskCompleted) => {
                         resolve({ "message": "Success!" });
                         
                     }).catch(err => {
+                        logger.error({source: 'review.saveReview', err, data});
+                        
                         reject({ code: 500, "message": err.message });
                     });
                 }
 
             }).catch(err => {
+                logger.error({source: 'review.saveReview', err, data});
+                
                 return reject({ code: 500, "message": err.message });
             });
 
@@ -85,14 +94,17 @@ exports.saveReview = (data, token, taskCompleted) => {
                 review.text = reviewJson.text;
                 review.stars = reviewJson.stars;
                 
-                review.save(err => {
-                    if (err) {
-                        return reject({ code: 500, "message": err.message });
-                    }
+                review.save().then(() => {
                     resolve({ "message": "Success!" });
+                }).catch(err => {
+                    logger.error({source: 'review.saveReview', err, data});
+                    
+                    return reject({ code: 500, "message": err.message });
                 });
 
             }).catch(err => {
+                logger.error({source: 'review.saveReview', err, data});
+                
                 return reject({ code: 500, "message": err.message });
             });
         }
