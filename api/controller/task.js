@@ -55,6 +55,10 @@ exports.saveTask = (data, token) => {
             task.accepted = false;
             task.rejected = false;
 
+            if (task.tasker === task.client){
+                return reject({ code: 401, "message": "You can't request a task for yorself!" });
+            }
+
             User.get({ _id: task.tasker }).then(tasker => { //ensure it's a professional
                 if (tasker === null || tasker.length <= 0 || tasker[0].type !== "professional") {
                     return reject({ code: 400, "message": "Please, fill all required fields!" });
