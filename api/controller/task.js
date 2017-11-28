@@ -55,7 +55,7 @@ exports.saveTask = (data, token) => {
             task.accepted = false;
             task.rejected = false;
 
-            if (task.tasker === task.client){
+            if (task.tasker.toString() === task.client.toString()){
                 return reject({ code: 401, "message": "You can't request a task for yorself!" });
             }
 

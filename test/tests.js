@@ -357,6 +357,39 @@ describe('Testing routes -', () => {
         
     });
 
+    it('Create a task for myself test', () => {
+        
+        let data = {
+            "token": professionalJsonLogin.token,
+            "service": clientJsonLogin.services[0]._id,
+            "tasker": professionalJsonLogin.profile._id,
+            "date": "2017/01/01",
+            "hour": "12:10",
+            "address": {
+                "street": "yyyyy", 
+                "unit": "603",
+                "city": "North york",
+                "state": "Ontario",
+                "country": "Canada",
+                "zip": "m2j 0b3"
+            },
+            "location": {
+                "type": "Point",
+                "coordinates": [ 
+                    43.7785100, 
+                    -79.346100
+                ]
+            }
+        };
+
+        return request(app)
+            .post('/task/saveTask')
+            .send('data=' + JSON.stringify(data))
+            .expect(401);
+        
+    });
+   
+
     it('Create a task with an expired token test', () => {
         
         let data = {
