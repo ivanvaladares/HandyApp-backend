@@ -8,10 +8,11 @@ var router  = express.Router();
 const getTasks = (req, res) => {
     
     TaskController.getTasks(req.data, req.token).then(results => {
+
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };
@@ -19,10 +20,11 @@ const getTasks = (req, res) => {
 const saveTask = (req, res) => {
 
     TaskController.saveTask(req.data, req.token).then(results => {
+        
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };
@@ -30,10 +32,11 @@ const saveTask = (req, res) => {
 const removeTask = (req, res) => {
 
     TaskController.removeTask(req.data, req.token).then(results => {
+        
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };
@@ -41,10 +44,11 @@ const removeTask = (req, res) => {
 const acceptTask = (req, res) => {
 
     TaskController.acceptTask(req.data, req.token).then(results => {
+        
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };
@@ -52,10 +56,11 @@ const acceptTask = (req, res) => {
 const rejectTask = (req, res) => {
     
     TaskController.rejectTask(req.data, req.token).then(results => {
+        
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };
@@ -63,10 +68,11 @@ const rejectTask = (req, res) => {
 const completeTask = (req, res) => {
 
     TaskController.completeTask(req.data, req.token).then(results => {
+        
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };

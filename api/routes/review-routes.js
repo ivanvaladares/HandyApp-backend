@@ -8,10 +8,11 @@ var router  = express.Router();
 const getReviews = (req, res) => {
     
     ReviewController.getReviews(req.data).then(results => {
+
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });    
     
 };
@@ -23,7 +24,7 @@ const saveReview = (req, res) => {
         res.json(reviews);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });    
 
 };

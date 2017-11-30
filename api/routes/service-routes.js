@@ -5,9 +5,11 @@ var router  = express.Router();
 
 const get = (req, res) => {
     ServiceController.get(null).then(services => {
+
         res.json(services);
+
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 };
 

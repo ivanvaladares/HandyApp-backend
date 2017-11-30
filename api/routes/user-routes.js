@@ -15,10 +15,11 @@ const get = (req, res) => {
 const login = (req, res) => {
 
     UserController.login(req.data).then(result => {
+        
         res.json(result);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };
@@ -26,10 +27,11 @@ const login = (req, res) => {
 const saveProfile = (req, res) => {
 
     UserController.saveProfile(req.data, req.token).then(result => {
+        
         res.json(result);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });
 
 };
@@ -37,10 +39,11 @@ const saveProfile = (req, res) => {
 const searchProfessionals = (req, res) => {
 
     UserController.searchProfessionals(req.data).then(results => {
+        
         res.json(results);
 
     }).catch(err => {
-        return res.status(err.code).send({ "message": err.message });
+        return res.status(err.code).json({ "message": err.message });
     });    
 
 };
