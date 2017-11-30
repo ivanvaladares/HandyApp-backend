@@ -1,11 +1,10 @@
 const nodeCrypto = require('crypto');
 const fs = require('fs');
 const jimp = require("jimp");
-
 const Jwt = require("jsonwebtoken");
-const crypto = require('./crypto.js');
-
 const sendgridMail = require('@sendgrid/mail');
+
+const crypto = require('./crypto.js');
 
 const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
@@ -46,6 +45,7 @@ module.exports = {
 
             base64Data = base64Data.replace(/^data:image\/\w+;base64,/, '');
 
+            //todo: this shoul be handled by another server dedicated to receive uploads with restricted access for security concerns
             this.createFilename(picurePath, imageType[1]).then(filename => {
 
                 jimp.read(Buffer.from(base64Data, 'base64'), (err, image) => {

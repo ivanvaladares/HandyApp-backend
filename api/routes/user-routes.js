@@ -6,8 +6,8 @@ var router  = express.Router();
 
 
 //todo: remove this method
-const get = (req, res) => {
-    UserController.get(null).then(users => {
+const getUsers = (req, res) => {
+    UserController.getUsers(null).then(users => {
         res.send("<pre>" + JSON.stringify(users, null, 4) + "</pre>"); //formatting to easy reading
     });
 };
@@ -48,7 +48,7 @@ const searchProfessionals = (req, res) => {
 
 };
 
-router.get('/', get); 
+router.get('/', getUsers); //todo: remove this route
 router.post('/login', helpers.getPostDataAndToken, login);
 router.post('/saveProfile', helpers.getPostDataAndToken, saveProfile);
 router.post('/searchProfessionals', helpers.isAuthenticated, searchProfessionals);

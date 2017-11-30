@@ -3,7 +3,7 @@ var ServiceController = require('../controller/service');
 
 var router  = express.Router();
 
-const get = (req, res) => {
+const getServices = (req, res) => {
     ServiceController.getServices(null).then(services => {
 
         res.json(services);
@@ -13,6 +13,6 @@ const get = (req, res) => {
     });
 };
 
-router.get('/', get); 
+router.get('/', getServices); 
 
 module.exports = router;
