@@ -33,14 +33,20 @@ module.exports = {
 
     savePicture: function (picurePath, base64Data) {
         return new Promise((resolve, reject) => {
+
             if (base64Data === undefined || base64Data === ""){
                 return resolve("");
             }
 
-            let imageType = base64Data.match(/data:image\/([a-zA-Z0-9-.+]+).*,.*/)[1];       
+            let imageType = base64Data.match(/data:image\/([a-zA-Z0-9-.+]+).*,.*/);
+
+            if (!Array.isArray(imageType)){
+                return resolve("");
+            }
+
             base64Data = base64Data.replace(/^data:image\/\w+;base64,/, '');
 
-            this.createFilename(picurePath, imageType).then(filename => {
+            this.createFilename(picurePath, imageType[1]).then(filename => {
 
                 jimp.read(Buffer.from(base64Data, 'base64'), (err, image) => {
                     if (err) {

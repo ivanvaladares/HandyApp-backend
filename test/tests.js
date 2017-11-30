@@ -40,6 +40,21 @@ describe('Testing routes -', () => {
         return request(app).get('/').expect(302); //
     });    
 
+    it('Get a list of services', () => {
+        return request(app)
+            .get('/service')
+            .expect(200)
+            .expect(res => {
+                let servicesArray = JSON.parse(res.text);
+
+                if (servicesArray.length != 7) {
+
+                    throw new Error('Missing information on json after get services');
+                }
+        });
+
+    });
+
     it('Create new profile without picture test', () => {
         
         let data = {
