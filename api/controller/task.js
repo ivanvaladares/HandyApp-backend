@@ -1,12 +1,12 @@
+const TaskModel = require('../models/task-model');
+const UserController = require('../controller/user');
+const ServiceController = require('../controller/service');
+const ReviewController = require('../controller/review');
+
 const helpers = require("../helpers.js");
 const log4js = require('log4js');
 
 const logger = log4js.getLogger(process.env.LOGGER_NAME);
-
-const Task = require('../models/task-model');
-const User = require('../models/user-model');
-const Service = require('../models/service-model');
-const ReviewController = require('../controller/review');
 
 exports.getTasks = (data, token) => {
 
@@ -20,7 +20,7 @@ exports.getTasks = (data, token) => {
             taskQuery.client = token.id;
         }
 
-        Task.get(taskQuery).then(retrievedTasks => {
+        TaskModel.get(taskQuery).then(retrievedTasks => {
 
             resolve({ results: retrievedTasks });
 
@@ -48,7 +48,7 @@ exports.saveTask = (data, token) => {
 
         if (taskJson._id === undefined) { //new user
 
-            task = new Task(taskJson);
+            task = new TaskModel(taskJson);
 
             task.client = token.id;
             task.completed = false;
@@ -59,14 +59,14 @@ exports.saveTask = (data, token) => {
                 return reject({ code: 401, "message": "You can't request a task for yorself!" });
             }
 
-            User.get({ _id: task.tasker }).then(tasker => { //ensure it's a professional
+            UserController.getUsers({ _id: task.tasker }).then(tasker => { //ensure it's a professional
                 if (tasker === null || tasker.length <= 0 || tasker[0].type !== "professional") {
                     return reject({ code: 400, "message": "Please, fill all required fields!" });
                 }
 
                 task.tasker = tasker[0];
 
-                Service.get({ _id: task.service }).then(service => { //ensure it's a service
+                ServiceController.getServices({ _id: task.service }).then(service => { //ensure it's a service
                     if (service === null || service.length <= 0) {
                         return reject({ code: 400, "message": "Please, fill all required fields!" });
                     }
@@ -98,7 +98,7 @@ exports.saveTask = (data, token) => {
 
         } else { //update task
 
-            Task.get({ _id: taskJson._id }).then(retrievedTask => {
+            TaskModel.get({ _id: taskJson._id }).then(retrievedTask => {
 
                 if (retrievedTask === null || retrievedTask.length <= 0) {
                     return reject({ code: 400, "message": "Please, fill all required fields!" });
@@ -140,7 +140,7 @@ exports.removeTask = (data, token) => {
 
     return new Promise((resolve, reject) => {
 
-        Task.get({ _id: data._id }).then(retrievedTask => {
+        TaskModel.get({ _id: data._id }).then(retrievedTask => {
 
             if (retrievedTask === null || retrievedTask.length <= 0) {
                 return reject({ code: 500, "message": "Sorry! This task is not available." });
@@ -177,7 +177,7 @@ exports.acceptTask = (data, token) => {
 
     return new Promise((resolve, reject) => {
 
-        Task.get({ _id: data._id }).then(retrievedTask => {
+        TaskModel.get({ _id: data._id }).then(retrievedTask => {
 
             if (retrievedTask === null || retrievedTask.length <= 0) {
                 return reject({ code: 500, "message": "Sorry! This task is not available." });
@@ -220,7 +220,7 @@ exports.rejectTask = (data, token) => {
 
     return new Promise((resolve, reject) => {
 
-        Task.get({ _id: data._id }).then(retrievedTask => {
+        TaskModel.get({ _id: data._id }).then(retrievedTask => {
 
             if (retrievedTask === null || retrievedTask.length <= 0) {
                 return reject({ code: 500, "message": "Sorry! This task is not available." });
@@ -266,7 +266,7 @@ exports.completeTask = (data, token) => {
 
     return new Promise((resolve, reject) => {
 
-        Task.get({ _id: data._id }).then(retrievedTask => {
+        TaskModel.get({ _id: data._id }).then(retrievedTask => {
 
             if (retrievedTask === null || retrievedTask.length <= 0) {
                 return reject({ code: 500, "message": "Sorry! This task is not available." });

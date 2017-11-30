@@ -4,7 +4,7 @@ var ServiceController = require('../controller/service');
 var router  = express.Router();
 
 const get = (req, res) => {
-    ServiceController.get(null).then(services => {
+    ServiceController.getServices(null).then(services => {
 
         res.json(services);
 

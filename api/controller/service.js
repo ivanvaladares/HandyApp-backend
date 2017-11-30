@@ -1,12 +1,12 @@
-const Service = require('../models/service-model');
+const ServiceModel = require('../models/service-model');
+
 const log4js = require('log4js');
 
 const logger = log4js.getLogger(process.env.LOGGER_NAME);
 
-exports.get = () => {
-
+exports.getServices = (where) => {
     return new Promise((resolve, reject) => {
-        Service.get(null).then(services => {
+        ServiceModel.get(where).then(services => {
             resolve(services);
         }).catch(err => {
             logger.error({ source: 'service.get', err });

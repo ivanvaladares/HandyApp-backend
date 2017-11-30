@@ -5,7 +5,7 @@ var reviewSchema = mongoose.Schema({
     text: String,
     stars: Number,
     date: Date
-});          
+});
 
 reviewSchema.statics.get = where => {
     return new Promise((resolve, reject) => {
@@ -17,7 +17,6 @@ reviewSchema.statics.get = where => {
             if (err) return reject(err);
             resolve(results);
         });
-
     });
 };
 

@@ -27,7 +27,6 @@ taskSchema.statics.get = where => {
             if (err) return reject(err);
             resolve(results);
         });
-
     });
 };
 

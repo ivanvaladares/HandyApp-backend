@@ -5,7 +5,7 @@ var UserController = require('../controller/user');
 var router  = express.Router();
 
 
-//todo: remover este metodo
+//todo: remove this method
 const get = (req, res) => {
     UserController.get(null).then(users => {
         res.send("<pre>" + JSON.stringify(users, null, 4) + "</pre>"); //formatting to easy reading

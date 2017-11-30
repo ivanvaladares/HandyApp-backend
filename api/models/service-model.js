@@ -7,7 +7,6 @@ var serviceSchema = mongoose.Schema({
 });          
 
 serviceSchema.statics.get = where => {
-
     return new Promise((resolve, reject) => {
         var query = Service.find(where).sort({ 'order': 1 });
 
@@ -15,7 +14,6 @@ serviceSchema.statics.get = where => {
             if (err) return reject(err);
             resolve(results);
         });
-
     });
 };
 

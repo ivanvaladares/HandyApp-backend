@@ -1,10 +1,10 @@
+const UserModel = require('../models/user-model');
+const ServiceController = require('../controller/service');
+const TaskController = require('../controller/task');
+
 const Jwt = require("jsonwebtoken");
 const crypto = require("../crypto.js");
 const helpers = require("../helpers.js");
-
-const User = require('../models/user-model');
-const Service = require('../models/service-model');
-const TaskController = require('../controller/task');
 const log4js = require('log4js');
 
 const logger = log4js.getLogger(process.env.LOGGER_NAME);
@@ -12,11 +12,10 @@ const logger = log4js.getLogger(process.env.LOGGER_NAME);
 const picurePath = "./public/images/users/";
 const publicPicurePath = "/images/users/";
 
-//todo: remover este metodo
-exports.get = () => {
 
+exports.getUsers = (where) => {
     return new Promise((resolve, reject) => {
-        User.get(null).then(users => {
+        UserModel.get(where).then(users => {
             resolve(users);
         }).catch(err => {
             logger.error({ source: 'user.get', err });
@@ -36,7 +35,7 @@ exports.login = (data) => {
             return reject({ code: 401, "message": errorMessage });
         }
 
-        User.get({ email: data.email, password: crypto.encrypt(data.password) }).then(retrievedUser => {
+        UserModel.get({ email: data.email, password: crypto.encrypt(data.password) }).then(retrievedUser => {
 
             if (retrievedUser === null || retrievedUser.length <= 0) {
                 logger.info({ source: 'user.login', message: 'Invalid login attempt', email: data.email });
@@ -51,13 +50,6 @@ exports.login = (data) => {
                 email: retrievedUser.email,
                 type: retrievedUser.type
             };//we can have more information inside this token
-
-            //criar um objeto resposta
-            let response = {
-                token: Jwt.sign(tokenData, crypto.privateKey, { expiresIn: (60 * 60) * 24 }),
-                profile: retrievedUser
-            };
-
 
             if (retrievedUser.type === "professional") {
 
@@ -77,10 +69,10 @@ exports.login = (data) => {
 
             let arrPromises = [];
 
-            //pegar os servicos
+            //het the services
             arrPromises.push(
                 new Promise((resolve, reject) => {
-                    Service.get(null).then(result => {
+                    ServiceController.getServices(null).then(result => {
                         resolve({ services: result });
                     }).catch(err => {
                         reject(err);
@@ -88,7 +80,7 @@ exports.login = (data) => {
                 })
             );
 
-            //pegar as tasks
+            //get the tasks
             let taskQuery = {};
             taskQuery.type = retrievedUser.type;
 
@@ -102,14 +94,22 @@ exports.login = (data) => {
                 })
             );
 
+
             Promise.all(arrPromises).then((promiseResults) => {
 
-                //unir o json de servicos e task a resposta
+                //create the response json with an encripted jwt
+                let response = {
+                    token: Jwt.sign(tokenData, crypto.privateKey, { expiresIn: (60 * 60) * 24 }),
+                    profile: retrievedUser
+                };
+            
+                //add services and taks json to the response
                 promiseResults.map(pResult => {
                     let key = Object.keys(pResult)[0];
                     response[key] = pResult[key];
                 });
 
+                //send this package to the user
                 resolve(response);
 
             }).catch(err => {
@@ -146,13 +146,13 @@ exports.saveProfile = (data, token) => {
                 return reject({ code: 400, "message": "Please, fill all required fields!" });
             }
 
-            User.get({ email: profile.email }).then(retrievedUser => {
+            UserModel.get({ email: profile.email }).then(retrievedUser => {
 
                 if (retrievedUser !== null && retrievedUser.length > 0) {
                     return reject({ code: 403, "message": "This email is already in use." });
                 }
 
-                user = new User(profile);
+                user = new UserModel(profile);
 
                 helpers.savePicture(picurePath, profile.picture).then(filename => {
                     if (filename !== "") {
@@ -183,7 +183,7 @@ exports.saveProfile = (data, token) => {
                 return reject({ code: 400, "message": "Please, fill all required fields!" });
             }
 
-            User.get({ _id: token.id }).then(retrievedUser => {
+            UserModel.get({ _id: token.id }).then(retrievedUser => {
 
                 if (retrievedUser === null || retrievedUser.length <= 0) {
                     return reject({ code: 401, "message": "Please, sign in again." });
@@ -191,7 +191,7 @@ exports.saveProfile = (data, token) => {
 
                 user = retrievedUser[0];
 
-                User.get({ email: profile.email }).then(userEmail => {
+                UserModel.get({ email: profile.email }).then(userEmail => {
 
                     if (userEmail === null || userEmail.length > 0) {
                         if (userEmail[0]._id.toString() !== token.id) {
@@ -282,7 +282,7 @@ exports.searchProfessionals = (data) => {
             }
         };
 
-        User.get(query).then(retrievedProfessionals => {
+        UserModel.get(query).then(retrievedProfessionals => {
 
             let response = [];
 

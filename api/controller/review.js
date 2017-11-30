@@ -1,17 +1,16 @@
-const helpers = require("../helpers.js");
+const ReviewModel = require('../models/review-model');
+const UserController = require('../controller/user');
 
-const User = require('../models/user-model');
-const Review = require('../models/review-model');
+const helpers = require("../helpers.js");
 const log4js = require('log4js');
 
 const logger = log4js.getLogger(process.env.LOGGER_NAME);
-
 
 exports.getReviews = (data) => {
 
     return new Promise((resolve, reject) => {
 
-        User.get({ _id: data.tasker }).then(retrievedUser => {
+        UserController.getUsers({ _id: data.tasker }).then(retrievedUser => {
 
             let reviews = [];
 
@@ -44,11 +43,11 @@ exports.saveReview = (data, token, taskCompleted) => {
 
         if (reviewJson._id === undefined) { //new review
             
-            let review = new Review(reviewJson);
+            let review = new ReviewModel(reviewJson);
             review.client = token.id;
             review.date = new Date();
 
-            User.get({ _id: reviewJson.tasker }).then(retrievedTaskers => { //ensure it's a professional
+            UserController.getUsers({ _id: reviewJson.tasker }).then(retrievedTaskers => { //ensure it's a professional
 
                 if (retrievedTaskers === null || retrievedTaskers.length <= 0 || retrievedTaskers[0].type !== "professional") {
                     return reject({ code: 400, "message": "Please, fill all required fields!" });
@@ -80,7 +79,7 @@ exports.saveReview = (data, token, taskCompleted) => {
 
         } else { //update review
 
-            Review.get({ _id: reviewJson._id }).then(retrievedReview => {
+            ReviewModel.get({ _id: reviewJson._id }).then(retrievedReview => {
 
                 if (retrievedReview === null || retrievedReview.length <= 0) {
                     return reject({ code: 400, "message": "Please, fill all required fields!" });
