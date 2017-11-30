@@ -127,8 +127,8 @@ module.exports = {
         try {
             req.data = JSON.parse(req.body.data);
 
-            if (req.body.token !== undefined){
-                req.token = Jwt.verify(req.body.token, crypto.privateKey);
+            if (req.data.token !== undefined){
+                req.token = Jwt.verify(req.data.token, crypto.privateKey);
             }
         
         } catch (err) {

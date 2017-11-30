@@ -25,7 +25,7 @@ const login = (req, res) => {
 
 const saveProfile = (req, res) => {
 
-    UserController.saveProfile(req.data).then(result => {
+    UserController.saveProfile(req.data, req.token).then(result => {
         res.json(result);
 
     }).catch(err => {

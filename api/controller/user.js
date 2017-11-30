@@ -142,6 +142,10 @@ exports.saveProfile = (data, token) => {
 
         if (token === undefined) { //new user
 
+            if (profile.email.trim() === "" || profile.password.trim() === ""){
+                return reject({ code: 400, "message": "Please, fill all required fields!" });
+            }
+
             User.get({ email: profile.email }).then(retrievedUser => {
 
                 if (retrievedUser !== null && retrievedUser.length > 0) {
@@ -175,6 +179,10 @@ exports.saveProfile = (data, token) => {
 
         } else { //update user
 
+            if (profile.email.trim() === ""){
+                return reject({ code: 400, "message": "Please, fill all required fields!" });
+            }
+
             User.get({ _id: token.id }).then(retrievedUser => {
 
                 if (retrievedUser === null || retrievedUser.length <= 0) {
@@ -193,7 +201,13 @@ exports.saveProfile = (data, token) => {
 
                     //atualizar os campos do usuario encontrado
                     Object.keys(profile).map(field => {
-                        user[field] = profile[field];
+                        if (field.toLowerCase() === "password"){
+                            if (profile[field].trim() !== ""){
+                                user[field] = profile[field];
+                            }
+                        }else{
+                            user[field] = profile[field];
+                        }
                     });
 
                     helpers.savePicture(picurePath, profile.picture).then(filename => {
@@ -363,6 +377,10 @@ const getProfileFromJson = jsonObject => {
             }
         }
 
+        if (jsonObject.services.length <= 0) {
+            return false;
+        }
+
         for (let i = 0; i < servicesFields.length; i++) {
             let field = servicesFields[i];
             for (let x = 0; x < jsonObject.services.length; x++) {
@@ -388,6 +406,10 @@ const getProfileFromJson = jsonObject => {
             } else {
                 return false;
             }
+        }
+
+        if (jsonObject.address.length <= 0) {
+            return false;
         }
 
         for (let i = 0; i < addressFields.length; i++) {

@@ -168,7 +168,7 @@ describe('Testing routes -', () => {
         return request(app)
             .post('/user/saveProfile')
             .send('data=' + JSON.stringify(data))
-            .expect(403);
+            .expect(400);
         
     });    
 
