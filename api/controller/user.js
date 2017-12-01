@@ -212,7 +212,7 @@ exports.saveProfile = (data, token) => {
 
                     helpers.savePicture(picurePath, profile.picture).then(filename => {
                         if (filename !== "") {
-                            user.picture = filename;
+                            user.picture = publicPicurePath + filename;
                         } else {
                             if (profile.picture === "") {
                                 user.picture = "";
